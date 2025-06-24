@@ -1,0 +1,6 @@
+# Core
+python-dotenv>=1.1.0
+
+# Testes
+pytest>=8.4.0
+pytest-cov>=6.2.1
