@@ -2,7 +2,7 @@ from sofilmes.domain.repositories.avaliacao_repositories import AvaliacaoReposit
 from sofilmes.domain.entities.avaliacao import Avaliacao
 from typing import List
 
-class InMemoryCommentRepository(AvaliacaoRepository):
+class InMemoryAvaliacaoRepository(AvaliacaoRepository):
     def __init__(self):
         self._avaliacao = {}
 
