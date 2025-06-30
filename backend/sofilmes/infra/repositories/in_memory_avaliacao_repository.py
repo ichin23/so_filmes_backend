@@ -35,5 +35,5 @@ class InMemoryAvaliacaoRepository(AvaliacoesRepository):
         self._avaliacoes[avaliacao.id] = avaliacao
 
     def removerAvaliacao(self, avaliacao_id)->None:
-        self._avaliacoes.pop(avaliacao_id)
+        del self._avaliacoes[avaliacao_id]
         return None
