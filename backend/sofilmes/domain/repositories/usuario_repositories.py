@@ -1,13 +1,13 @@
 from abc import ABC, abstractmethod
-from sofilmes.domain.entities.usuario import User
+from sofilmes.domain.entities.usuario import Usuario
 
 class UsuarioRepository(ABC):
     @abstractmethod
-    def login(self, email:str, password:str)->User: 
+    def login(self, email:str, password:str)->Usuario: 
         pass
 
     @abstractmethod
-    def register(self, user:User)->None:
+    def register(self, usuario:Usuario)->None:
         pass
 
     @abstractmethod
@@ -15,9 +15,9 @@ class UsuarioRepository(ABC):
         pass
 
     @abstractmethod
-    def get_current_user(self)->User|None:
+    def get_current_usuario(self)->Usuario|None:
         pass
 
     @abstractmethod
-    def set_current_user(self, user:User)->None:
+    def set_current_usuario(self, usuario:Usuario)->None:
         pass

@@ -15,6 +15,7 @@
   "extensions": [
     "ms-python.python",
     "ms-python.vscode-pylance",
-    "ms-vscode.makefile-tools"
+    "ms-vscode.makefile-tools",
+    "Bar.python-import-helper"
   ]
 }
