@@ -3,7 +3,7 @@ class Filme:
         self.id = id
         self.titulo = titulo
         self.tituloOriginal = tituloOriginal
-        self.case = capa
+        self.capa = capa
         self.descricao = descricao
         self.avaliacao=avaliacao
         self.ano = ano
