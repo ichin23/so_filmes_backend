@@ -1,9 +1,12 @@
 {
   "name": "SoFilmes API Dev",
-  "context": "..",
-  "dockerFile": "../Dockerfile",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "sofilmes",
   "workspaceFolder": "/home/devuser/app",
   "remoteUser": "devuser",
+  "forwardPorts": [
+    8080
+  ],
   "settings": {
     "terminal.integrated.defaultProfile.linux": "bash",
     "python.defaultInterpreterPath": "/usr/local/bin/python"
@@ -16,6 +19,8 @@
     "ms-python.python",
     "ms-python.vscode-pylance",
     "ms-vscode.makefile-tools",
+    "ms-azuretools.vscode-docker",
+    "humao.rest-client",
     "Bar.python-import-helper"
   ]
 }

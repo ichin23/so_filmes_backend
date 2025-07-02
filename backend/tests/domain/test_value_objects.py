@@ -10,6 +10,11 @@ def test_invalid_email():
     with pytest.raises(ValueError):
         Email("invalid-email")
 
+def test_str_email():
+    email = Email("user@example.com")
+    assert str(email) == "user@example.com"
+
+
 def test_valid_password():
     pwd = Password("Secret123")
     assert pwd.value() == "Secret123"
