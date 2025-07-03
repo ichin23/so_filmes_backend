@@ -7,7 +7,7 @@ class InMemoryFilmeRepository(FilmesRepository):
         self._filmes = {}
 
     def get_all(self) -> List[Filme]:
-        return list(self._filmes.values)
+        return list(self._filmes.values())
     
     def get_by_id(self, id) ->Optional[Filme]:
         return self._filmes.get(id)

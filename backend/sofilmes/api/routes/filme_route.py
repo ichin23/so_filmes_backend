@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sofilmes.usecases.filme.get_all_filme import GetAllFilmeUseCase
 from sofilmes.usecases.filme.get_by_id_filme import GetByIdFilmeUseCase
 from sofilmes.usecases.filme.create_filme import CreateFilmeUseCase
@@ -15,26 +15,25 @@ router = APIRouter()
 
 @router.get("/", response_model=List[FilmeOutput])
 def get_all_filmes():
-    usecase = GetAllFilmeUseCase()
+    usecase = GetAllFilmeUseCase(filme_repo)
     filmes = usecase.execute()
     return filmes
 
 @router.get("/{filme_id}", response_model=FilmeOutput)
 def get_filme_by_id(filme_id: str):
-    usecase = GetByIdFilmeUseCase()
-    filme = usecase.execute()
+    usecase = GetByIdFilmeUseCase(filme_repo)
+    filme = usecase.execute(filme_id)
+    if not filme:
+        raise HTTPException(status_code=404, detail="Filme not found")
     return filme
 
 @router.post("/", response_model=FilmeOutput)
-async def create_filme(
+def create_filme(
     data: FilmeInput,
-    #db: AsyncSession = Depends(get_db_session)
-    #credentials: HTTPAuthorizationCredentials = Depends(security)
-    filme_repo: FilmesRepository = Depends(filme_repo)
 ):
     usecase = CreateFilmeUseCase(filme_repo)
     filme = Filme(
-        id=str(uuid.uuid4),
+        id=str(uuid.uuid4()),
         titulo=data.titulo,
         tituloOriginal=data.tituloOriginal,
         capa=data.capa,
@@ -44,5 +43,5 @@ async def create_filme(
         generos=data.generos,
         diretor=data.diretor
     )
-    created_filme = await usecase.execute()
+    created_filme = usecase.execute(filme)
     return created_filme

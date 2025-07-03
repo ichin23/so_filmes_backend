@@ -40,5 +40,5 @@ downgrade:
 	alembic downgrade -1
 
 run:
-	uvicorn blog.api.main:app --reload --host 0.0.0.0 --port 8000
+	uvicorn sofilmes.api.main:app --reload --host 0.0.0.0 --port 8000
 	
