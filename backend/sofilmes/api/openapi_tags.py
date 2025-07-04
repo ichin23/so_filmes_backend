@@ -1,6 +1,6 @@
 openapi_tags = [
     {
-        "name": "Users",
+        "name": "Usuários",
         "description": "Operações de autenticação e cadastro de usuários.",
     },
     {

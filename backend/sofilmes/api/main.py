@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from sofilmes.api.routes import filme_route
+from sofilmes.api.routes import usuario_route
 from sofilmes.api.openapi_tags import openapi_tags
 
 
@@ -18,6 +19,6 @@ def ola():
     return {"olá": "fastapi"}
 
 
-#app.include_router(usuarios_route.router, prefix="/usuarios", tags=["Usuários"])
-app.include_router(filme_route.router, prefix="/filme", tags=["Filme"])
-#app.include_router(avaliacao_route.router, prefix="/avaliacao", tags=["Avaliacao"])
+app.include_router(usuario_route.router, prefix="/usuarios", tags=["Usuários"])
+app.include_router(filme_route.router, prefix="/filme", tags=["Filmes"])
+#app.include_router(avaliacao_route.router, prefix="/avaliacao", tags=["Avaliações"])
