@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from sofilmes.api.routes import filme_route
 from sofilmes.api.routes import usuario_route
+from sofilmes.api.routes import avaliacao_route
 from sofilmes.api.openapi_tags import openapi_tags
 
 
@@ -21,4 +22,4 @@ def ola():
 
 app.include_router(usuario_route.router, prefix="/usuarios", tags=["Usuários"])
 app.include_router(filme_route.router, prefix="/filme", tags=["Filmes"])
-#app.include_router(avaliacao_route.router, prefix="/avaliacao", tags=["Avaliações"])
+app.include_router(avaliacao_route.router, prefix="/avaliacao", tags=["Avaliações"])
