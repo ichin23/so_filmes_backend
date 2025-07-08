@@ -4,5 +4,5 @@ class DeleteAvaliacaoUseCase:
     def __init__(self, repository: AvaliacaoRepository):
         self.repository = repository
     
-    def execute(self, avaliacao_id:str)->None:
-        self.repository.delete(avaliacao_id)
+    def execute(self, avaliacao_id:str)->bool:
+        return self.repository.removerAvaliacao(avaliacao_id)

@@ -5,4 +5,7 @@ from sofilmes.infra.repositories.in_memory_avaliacao_repository import InMemoryA
 # Instâncias em memória para simulação
 user_repo = InMemoryUsuarioRepository()
 filme_repo = InMemoryFilmeRepository()
-avaliacao_repo = InMemoryAvaliacaoRepository()
+avaliacao_repo_instance = InMemoryAvaliacaoRepository()
+
+def avaliacao_repo():
+    return avaliacao_repo_instance

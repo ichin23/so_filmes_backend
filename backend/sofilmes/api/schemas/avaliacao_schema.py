@@ -8,12 +8,12 @@ class CreateAvaliacaoInput(BaseModel):
     avaliacao:float = Field(..., ge=1, le=5, description="Nota do Filme")
 
 class AvaliacaoOutput(BaseModel):
-    id: str = Field(..., description="ID da avaliação")
-    filme_id: str = Field(..., description="ID do filme avaliado")
-    user_id: str = Field(..., description="ID do usuário que fez a avaliação")
-    comentario: str = Field(..., min_length=1, max_length=500, description="Comentário da avaliação")
-    quant: int = Field(..., ge=1, le=5, description="Nota da avaliação (1 a 5)")
-    data: str = Field(..., description="Data da avaliação no formato ISO 8601")
+    id: str
+    filme_id: str
+    user_id: str
+    comentario: str
+    avaliacao: float
+
 
     @classmethod
     def from_entity(cls, avaliacao):
@@ -22,6 +22,5 @@ class AvaliacaoOutput(BaseModel):
             filme_id=avaliacao.filme_id,
             user_id=avaliacao.user_id,
             comentario=avaliacao.comentario,
-            quant=avaliacao.quant,
-            data=avaliacao.data,
+            avaliacao=avaliacao.avaliacao,
         )

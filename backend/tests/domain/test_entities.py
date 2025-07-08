@@ -32,7 +32,7 @@ def test_create_filme():
 def test_create_avaliacao():
     avaliacao = Avaliacao(
         id=str(uuid.uuid4()),
-        autor_id=str(uuid.uuid4()),
+        user_id=str(uuid.uuid4()),
         filme_id=str(uuid.uuid4()),
         avaliacao=5,
         comentario="Muito bom"

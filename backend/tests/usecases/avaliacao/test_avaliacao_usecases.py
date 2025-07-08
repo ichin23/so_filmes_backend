@@ -8,7 +8,7 @@ from sofilmes.usecases.avaliacao.get_avaliacoes_by_usuario import GetAvaliacoesB
 def create_test_avaliacao(user_id=None, filme_id=None):
     return Avaliacao(
         id=str(uuid.uuid4()),
-        autor_id=user_id or str(uuid.uuid4()),
+        user_id=user_id or str(uuid.uuid4()),
         filme_id=filme_id or str(uuid.uuid4()),
         avaliacao=5,
         comentario="Muito bom"

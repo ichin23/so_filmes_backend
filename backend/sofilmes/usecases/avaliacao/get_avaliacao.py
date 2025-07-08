@@ -7,4 +7,4 @@ class GetAvaliacaoUseCase:
         self.repository = repository
 
     def execute(self, avaliacao_id:str)->Avaliacao:
-        return self.repository.get_avaliacao(avaliacao_id)
+        return self.repository.getAvaliacao(avaliacao_id)
