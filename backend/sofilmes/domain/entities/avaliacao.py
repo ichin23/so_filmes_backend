@@ -5,3 +5,4 @@ class Avaliacao:
         self.filme_id = filme_id
         self.avaliacao = avaliacao
         self.comentario = comentario
+        

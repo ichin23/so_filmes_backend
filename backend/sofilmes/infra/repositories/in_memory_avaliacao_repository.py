@@ -1,26 +1,25 @@
 from sofilmes.domain.entities.avaliacao import Avaliacao
 from sofilmes.domain.repositories.avaliacoes_repositories import AvaliacoesRepository
-from typing import List
+from typing import List, Optional
 
 class InMemoryAvaliacaoRepository(AvaliacoesRepository):
     def __init__(self):
         self._avaliacoes = {}
     
-    def getAvaliacaoByUserEFilme(self, user_id, filme_id)->List[Avaliacao]:
-        avaliacoes = []
+    def getAvaliacaoByUserEFilme(self, user_id:str, filme_id:str)->Optional[Avaliacao]:
         for avaliacao in self._avaliacoes.values():
             if avaliacao.autor_id == user_id and avaliacao.filme_id == filme_id:
-                avaliacoes.append(avaliacao)
-        return avaliacoes
+                return avaliacao
+        return None
     
-    def getAvaliacoesByFilme(self, filme_id)->List[Avaliacao]:
+    def getAvaliacoesByFilme(self, filme_id:str)->List[Avaliacao]:
         avaliacoes = []
         for avaliacao in self._avaliacoes.values():
             if avaliacao.filme_id == filme_id:
                 avaliacoes.append(avaliacao)
         return avaliacoes
     
-    def getAvaliacoesByUser(self, user_id) -> List[Avaliacao]:
+    def getAvaliacoesByUser(self, user_id:str) -> List[Avaliacao]:
         avaliacoes = []
         for avaliacao in self._avaliacoes.values():
             if avaliacao.autor_id == user_id:
@@ -34,6 +33,6 @@ class InMemoryAvaliacaoRepository(AvaliacoesRepository):
     def editarAvaliacao(self, avaliacao:Avaliacao)->None:
         self._avaliacoes[avaliacao.id] = avaliacao
 
-    def removerAvaliacao(self, avaliacao_id)->None:
+    def removerAvaliacao(self, avaliacao_id:str)->None:
         del self._avaliacoes[avaliacao_id]
         return None

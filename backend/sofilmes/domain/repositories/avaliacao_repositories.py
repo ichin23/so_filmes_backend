@@ -4,7 +4,7 @@ from sofilmes.domain.entities.avaliacao import Avaliacao
 class AvaliacaoRepository(ABC):
 
     @abstractmethod
-    def create(self, avaliacao:Avaliacao) -> None:
+    def create(self, avaliacao:Avaliacao) -> Avaliacao:
         pass
 
     @abstractmethod

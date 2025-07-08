@@ -6,7 +6,7 @@ test:
 	pytest -v
 
 # test-cov:
-# 	pytest --cov=blog --cov-report=term-missing -v
+# 	pytest --cov=sofilmes --cov-report=term-missing -v
 
 test-cov:
 	coverage run -m pytest
@@ -14,13 +14,13 @@ test-cov:
 	coverage html
 
 lint:
-	black blog tests --check
+	black sofilmes tests --check
 
 format:
-	black blog tests
+	black sofilmes tests
 
 typecheck:
-	mypy blog --explicit-package-bases
+	mypy sofilmes --explicit-package-bases
 
 # Alembic
 

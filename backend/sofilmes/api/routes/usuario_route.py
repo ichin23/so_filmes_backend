@@ -29,6 +29,9 @@ def register_usuario(data: RegisterUserInput):
         usecase = RegisterUsuarioUseCase(user_repo)
         result = usecase.execute(user)
 
+        if result is None:
+            raise HTTPException(status_code=404, detail="Erro no usuário")
+
         return RegisterUserResponse(
             message="User Registered Successfully",
             user = UserOutput(
@@ -46,6 +49,8 @@ def register_usuario(data: RegisterUserInput):
     description="Autentica um usuário com email e senha forte.",)
 def login_user(data:LoginUserInput):
     try:
+
+        
         usecase = LoginUsuarioUseCase(user_repo)
         result = usecase.execute(Email(data.email), Password(data.password))
 

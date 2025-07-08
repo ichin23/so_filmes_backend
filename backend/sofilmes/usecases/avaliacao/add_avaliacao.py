@@ -6,4 +6,4 @@ class CreateAvalicaoUseCase:
         self.repository = repository
     
     def execute(self, avaliacao:Avaliacao) -> Avaliacao:
-        return self. repository.create(avaliacao)
+        return self.repository.create(avaliacao)

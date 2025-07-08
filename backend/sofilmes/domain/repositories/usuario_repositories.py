@@ -1,13 +1,16 @@
 from abc import ABC, abstractmethod
 from sofilmes.domain.entities.usuario import Usuario
+from typing import Optional
+from sofilmes.domain.value_objects.senha_vo import Password
+from sofilmes.domain.value_objects.email_vo import Email
 
 class UsuarioRepository(ABC):
     @abstractmethod
-    def login(self, email:str, password:str)->Usuario: 
+    def login(self, email:Email, password:Password)->Optional[Usuario]: 
         pass
 
     @abstractmethod
-    def register(self, usuario:Usuario)->None:
+    def register(self, usuario:Usuario)->Optional[Usuario]:
         pass
 
     @abstractmethod
