@@ -5,18 +5,20 @@ from sofilmes.domain.value_objects.senha_vo import Password
 import uuid
 from sofilmes.domain.entities.avaliacao import Avaliacao
 
+
 def test_create_usuario() -> Usuario:
     usuario = Usuario(
         id=str(uuid.uuid4()),
         nome="Test Usuario",
         email=Email("test@example.com"),
         senha=Password("secur3Pass"),
-        username="usuario"
+        username="usuario",
     )
-    assert usuario.nome =="Test Usuario"
+    assert usuario.nome == "Test Usuario"
+
 
 def test_create_filme():
-    filme =  Filme(
+    filme = Filme(
         id=str(uuid.uuid4()),
         titulo="Filme 1",
         tituloOriginal="Movie 1",
@@ -29,13 +31,14 @@ def test_create_filme():
     )
     assert filme.titulo == "Filme 1"
 
+
 def test_create_avaliacao():
     avaliacao = Avaliacao(
         id=str(uuid.uuid4()),
         user_id=str(uuid.uuid4()),
         filme_id=str(uuid.uuid4()),
         avaliacao=5,
-        comentario="Muito bom"
+        comentario="Muito bom",
     )
 
     assert avaliacao.avaliacao == 5

@@ -16,13 +16,15 @@ from sofilmes.usecases.avaliacao.set_avaliacao import SetAvaliacaoUseCase
 
 router = APIRouter()
 
-#TODO: Adicionar types de retorno da rotas
+# TODO: Adicionar types de retorno da rotas
+
 
 @router.get("/byuser/{id_user}", response_model=List[AvaliacaoOutput])
-def get_avaliacoes_by_user(id_user:str):
+def get_avaliacoes_by_user(id_user: str):
     usecase = GetAvaliacaoByUserUseCase(avaliacao_repo())
     avaliacoes = usecase.execute(id_user)
     return avaliacoes
+
 
 @router.get("/byid/{avaliacao_id}", response_model=AvaliacaoOutput)
 def get_avaliacao_by_id(avaliacao_id: str):
@@ -32,15 +34,18 @@ def get_avaliacao_by_id(avaliacao_id: str):
         raise HTTPException(status_code=404, detail="Avaliação not found")
     return avaliacao
 
+
 @router.post("/", response_model=AvaliacaoOutput)
-def create_avaliacao( data: CreateAvaliacaoInput,):
+def create_avaliacao(
+    data: CreateAvaliacaoInput,
+):
     usecase = CreateAvalicaoUseCase(avaliacao_repo())
     avaliacao = Avaliacao(
         id=str(uuid.uuid4()),
         user_id=data.user_id,
         filme_id=data.filme_id,
-        avaliacao = data.avaliacao,
-        comentario = data.comentario,
+        avaliacao=data.avaliacao,
+        comentario=data.comentario,
     )
 
     created_avaliacao = usecase.execute(avaliacao)
@@ -52,14 +57,14 @@ def delete_avaliacao(
     avaliacao_id: str,
     repo: AvaliacoesRepository = Depends(avaliacao_repo),
 ):
-    #print(" ID recebido para deletar:", avaliacao_id)
-    #print(" IDs existentes:", list(repo._avaliacoes.keys()))  
+    # print(" ID recebido para deletar:", avaliacao_id)
+    # print(" IDs existentes:", list(repo._avaliacoes.keys()))
 
     usecase = DeleteAvaliacaoUseCase(repo)
     success = usecase.execute(avaliacao_id)
-    
-    #print(" ID recebido para deletar:", avaliacao_id)
-    #print(" IDs existentes:", list(repo._avaliacoes.keys()))
+
+    # print(" ID recebido para deletar:", avaliacao_id)
+    # print(" IDs existentes:", list(repo._avaliacoes.keys()))
     if not success:
         raise HTTPException(status_code=404, detail="Avaliação não encontrada")
     return {"message": "Avaliação deletada com sucesso"}
@@ -80,9 +85,8 @@ def update_avaliacao(avaliacao_id: str, data: CreateAvaliacaoInput):
 
     success = usecase.execute(avaliacao)
     if not success:
-        raise HTTPException(status_code=404, detail="Avaliação não encontrada para atualização")
+        raise HTTPException(
+            status_code=404, detail="Avaliação não encontrada para atualização"
+        )
 
     return AvaliacaoOutput.from_entity(avaliacao)
-
-
-

@@ -11,13 +11,15 @@ import uuid
 
 router = APIRouter()
 
-#TODO: Adicionar types de retorno da rotas
+# TODO: Adicionar types de retorno da rotas
+
 
 @router.get("/", response_model=List[FilmeOutput])
 def get_all_filmes():
     usecase = GetAllFilmeUseCase(filme_repo)
     filmes = usecase.execute()
     return filmes
+
 
 @router.get("/{filme_id}", response_model=FilmeOutput)
 def get_filme_by_id(filme_id: str):
@@ -26,6 +28,7 @@ def get_filme_by_id(filme_id: str):
     if not filme:
         raise HTTPException(status_code=404, detail="Filme not found")
     return filme
+
 
 @router.post("/", response_model=FilmeOutput)
 def create_filme(
@@ -41,7 +44,7 @@ def create_filme(
         avaliacao=data.avaliacao,
         ano=data.ano,
         generos=data.generos,
-        diretor=data.diretor
+        diretor=data.diretor,
     )
     created_filme = usecase.execute(filme)
     return created_filme

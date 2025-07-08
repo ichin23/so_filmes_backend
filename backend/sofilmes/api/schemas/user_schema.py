@@ -4,10 +4,12 @@ from typing import Literal
 
 class RegisterUserInput(BaseModel):
     nome: str = Field(..., min_length=3, max_length=50, description="Nome do usuário")
-    username:str = Field(..., min_length=3, max_length=20, description="Regsitro de usuário")
+    username: str = Field(
+        ..., min_length=3, max_length=20, description="Regsitro de usuário"
+    )
     email: EmailStr = Field(..., description="Email do usuário")
     password: str = Field(..., min_length=8, description="Senha do usuário")
-    #role: Literal["user", "admin"]
+    # role: Literal["user", "admin"]
 
 
 class LoginUserInput(BaseModel):
@@ -22,9 +24,11 @@ class SetCurrentUserInput(BaseModel):
 class UserOutput(BaseModel):
     id: str = Field(..., description="ID do usuário")
     nome: str = Field(..., min_length=3, max_length=50, description="Nome do usuário")
-    username:str = Field(..., min_length=3, max_length=20, description="Regsitro de usuário")
+    username: str = Field(
+        ..., min_length=3, max_length=20, description="Regsitro de usuário"
+    )
     email: str = Field(..., description="Email do usuário")
-    #role: str = Field(..., description="Papel do usuário (admin, user)")
+    # role: str = Field(..., description="Papel do usuário (admin, user)")
 
     @classmethod
     def from_entity(cls, user):
@@ -32,7 +36,7 @@ class UserOutput(BaseModel):
             id=user.id,
             nome=user.nome,
             email=user.email.value,
-            #role=user.role,
+            # role=user.role,
         )
 
 

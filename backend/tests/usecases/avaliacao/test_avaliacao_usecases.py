@@ -1,9 +1,16 @@
 from sofilmes.domain.entities.avaliacao import Avaliacao
 import uuid
-from sofilmes.infra.repositories.in_memory_avaliacao_repository import InMemoryAvaliacaoRepository
+from sofilmes.infra.repositories.in_memory_avaliacao_repository import (
+    InMemoryAvaliacaoRepository,
+)
 from sofilmes.usecases.avaliacao.criar_avaliacao import CriarAvaliacaoUseCase
-from sofilmes.usecases.avaliacao.get_avaliacoes_by_filme import GetAvaliacoesByFilmeUseCase
-from sofilmes.usecases.avaliacao.get_avaliacoes_by_usuario import GetAvaliacoesByUsuarioUseCase
+from sofilmes.usecases.avaliacao.get_avaliacoes_by_filme import (
+    GetAvaliacoesByFilmeUseCase,
+)
+from sofilmes.usecases.avaliacao.get_avaliacoes_by_usuario import (
+    GetAvaliacoesByUsuarioUseCase,
+)
+
 
 def create_test_avaliacao(user_id=None, filme_id=None):
     return Avaliacao(
@@ -11,8 +18,9 @@ def create_test_avaliacao(user_id=None, filme_id=None):
         user_id=user_id or str(uuid.uuid4()),
         filme_id=filme_id or str(uuid.uuid4()),
         avaliacao=5,
-        comentario="Muito bom"
+        comentario="Muito bom",
     )
+
 
 def test_create_avaliacao():
     repo = InMemoryAvaliacaoRepository()
@@ -23,6 +31,7 @@ def test_create_avaliacao():
 
     assert result == avaliacao
     assert repo._avaliacoes[avaliacao.id] == avaliacao
+
 
 def test_get_avaliacoes_by_filme():
     repo = InMemoryAvaliacaoRepository()
@@ -43,6 +52,7 @@ def test_get_avaliacoes_by_filme():
     assert avaliacao3 not in result
     assert len(result) == 2
 
+
 def test_get_avaliacaoes_by_user():
     repo = InMemoryAvaliacaoRepository()
     user_id = str(uuid.uuid4())
@@ -62,15 +72,10 @@ def test_get_avaliacaoes_by_user():
     assert avaliacao3 not in result
     assert len(result) == 2
 
+
 def test_get_avaliacaoes_by_filme_empty():
     repo = InMemoryAvaliacaoRepository()
     usecase = GetAvaliacoesByFilmeUseCase(repo)
     result = usecase.execute("filme-1")
 
     assert result == []
-
-
-
-
-
-    

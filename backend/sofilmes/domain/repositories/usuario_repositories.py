@@ -4,13 +4,14 @@ from typing import Optional
 from sofilmes.domain.value_objects.senha_vo import Password
 from sofilmes.domain.value_objects.email_vo import Email
 
+
 class UsuarioRepository(ABC):
     @abstractmethod
-    def login(self, email:Email, password:Password)->Optional[Usuario]: 
+    def login(self, email: Email, password: Password) -> Optional[Usuario]:
         pass
 
     @abstractmethod
-    def register(self, usuario:Usuario)->Optional[Usuario]:
+    def register(self, usuario: Usuario) -> Optional[Usuario]:
         pass
 
     @abstractmethod
@@ -18,9 +19,9 @@ class UsuarioRepository(ABC):
         pass
 
     @abstractmethod
-    def get_current_usuario(self)->Usuario|None:
+    def get_current_usuario(self) -> Usuario | None:
         pass
 
     @abstractmethod
-    def set_current_usuario(self, usuario:Usuario)->None:
+    def set_current_usuario(self, usuario: Usuario) -> None:
         pass
