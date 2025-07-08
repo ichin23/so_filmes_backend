@@ -20,7 +20,7 @@ class AvaliacaoModel(Base):
     def from_entity(cls, entity: Avaliacao) -> "AvaliacaoModel":
         return cls(
             id=entity.id,
-            user_id=entity.autor_id,
+            user_id=entity.user_id,
             filme_id=entity.filme_id,
             comentario=entity.comentario,
             quant=entity.avaliacao,
@@ -31,7 +31,7 @@ class AvaliacaoModel(Base):
         from sofilmes.domain.entities.avaliacao import Avaliacao
         return Avaliacao(
             id=self.id,
-            autor_id=self.user_id,
+            user_id=self.user_id,
             filme_id=self.filme_id,
             comentario=self.comentario,
             avaliacao=self.quant,

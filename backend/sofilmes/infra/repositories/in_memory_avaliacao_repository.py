@@ -19,7 +19,7 @@ class InMemoryAvaliacaoRepository(AvaliacoesRepository):
                 avaliacoes.append(avaliacao)
         return avaliacoes
     
-    def getAvaliacao(self, avaliacao_id)->Avaliacao:
+    def getAvaliacao(self, avaliacao_id)->Optional[Avaliacao]:
         for avaliacao in self._avaliacoes.values():
             if avaliacao.id == avaliacao_id:
                 return avaliacao
@@ -37,7 +37,7 @@ class InMemoryAvaliacaoRepository(AvaliacoesRepository):
         self._avaliacoes[avaliacao.id] = avaliacao
         return avaliacao
     
-    def editarAvaliacao(self, avaliacao:Avaliacao) -> Avaliacao:
+    def editarAvaliacao(self, avaliacao:Avaliacao) -> Optional[Avaliacao]:
         if avaliacao.id in self._avaliacoes:
             self._avaliacoes[avaliacao.id] = avaliacao
             return avaliacao

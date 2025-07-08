@@ -7,7 +7,7 @@ from sofilmes.usecases.avaliacao.delete_avaliacao import DeleteAvaliacaoUseCase
 from sofilmes.usecases.avaliacao.set_avaliacao import SetAvaliacaoUseCase
 from sofilmes.api.schemas.avaliacao_schema import AvaliacaoOutput, CreateAvaliacaoInput
 from typing import List
-from sofilmes.domain.repositories.avaliacao_repositories import AvaliacaoRepository
+from sofilmes.domain.repositories.avaliacoes_repositories import AvaliacoesRepository
 from sofilmes.api.deps import avaliacao_repo
 from sofilmes.domain.entities.avaliacao import Avaliacao
 import uuid
@@ -50,16 +50,16 @@ def create_avaliacao( data: CreateAvaliacaoInput,):
 @router.delete("/{avaliacao_id}")
 def delete_avaliacao(
     avaliacao_id: str,
-    repo: AvaliacaoRepository = Depends(avaliacao_repo),
+    repo: AvaliacoesRepository = Depends(avaliacao_repo),
 ):
-    print(" ID recebido para deletar:", avaliacao_id)
-    print(" IDs existentes:", list(repo._avaliacoes.keys()))  
+    #print(" ID recebido para deletar:", avaliacao_id)
+    #print(" IDs existentes:", list(repo._avaliacoes.keys()))  
 
     usecase = DeleteAvaliacaoUseCase(repo)
     success = usecase.execute(avaliacao_id)
     
-    print(" ID recebido para deletar:", avaliacao_id)
-    print(" IDs existentes:", list(repo._avaliacoes.keys()))
+    #print(" ID recebido para deletar:", avaliacao_id)
+    #print(" IDs existentes:", list(repo._avaliacoes.keys()))
     if not success:
         raise HTTPException(status_code=404, detail="Avaliação não encontrada")
     return {"message": "Avaliação deletada com sucesso"}

@@ -1,7 +1,7 @@
-from sofilmes.domain.repositories.avaliacao_repositories import AvaliacaoRepository
+from sofilmes.domain.repositories.avaliacoes_repositories import AvaliacoesRepository
 
 class DeleteAvaliacaoUseCase:
-    def __init__(self, repository: AvaliacaoRepository):
+    def __init__(self, repository: AvaliacoesRepository):
         self.repository = repository
     
     def execute(self, avaliacao_id:str)->bool:
