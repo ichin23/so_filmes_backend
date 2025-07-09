@@ -3,7 +3,6 @@ from sqlalchemy.orm import Mapped, mapped_column
 from sofilmes.infra.database import Base
 from sofilmes.domain.entities.avaliacao import Avaliacao
 
-
 class AvaliacaoModel(Base):
     __tablename__ = "avaliacoes"
 
@@ -33,8 +32,6 @@ class AvaliacaoModel(Base):
         )
 
     def to_entity(self) -> Avaliacao:
-        from sofilmes.domain.entities.avaliacao import Avaliacao
-
         return Avaliacao(
             id=self.id,
             user_id=self.user_id,
