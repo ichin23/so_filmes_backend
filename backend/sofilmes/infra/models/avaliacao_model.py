@@ -3,6 +3,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from sofilmes.infra.database import Base
 from sofilmes.domain.entities.avaliacao import Avaliacao
 
+
 class AvaliacaoModel(Base):
     __tablename__ = "avaliacoes"
 

@@ -18,6 +18,7 @@ user_repo = InMemoryUsuarioRepository()
 filme_repo = InMemoryFilmeRepository()
 avaliacao_repo_instance = InMemoryAvaliacaoRepository()
 
+
 async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
     async with async_session() as session:
         yield session
