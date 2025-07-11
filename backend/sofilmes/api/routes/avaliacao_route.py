@@ -1,3 +1,4 @@
+import datetime
 from fastapi import APIRouter, Depends, HTTPException
 from sofilmes.usecases.avaliacao.add_avaliacao import CreateAvalicaoUseCase
 from fastapi.security import HTTPAuthorizationCredentials
@@ -44,6 +45,7 @@ def create_avaliacao(
         id=str(uuid.uuid4()),
         user_id=data.user_id,
         filme_id=data.filme_id,
+        data=datetime.datetime.now(),
         avaliacao=data.avaliacao,
         comentario=data.comentario,
     )
@@ -79,6 +81,7 @@ def update_avaliacao(avaliacao_id: str, data: CreateAvaliacaoInput):
         id=avaliacao_id,
         user_id=data.user_id,
         filme_id=data.filme_id,
+        data=datetime.datetime.now(),
         comentario=data.comentario,
         avaliacao=data.avaliacao,
     )

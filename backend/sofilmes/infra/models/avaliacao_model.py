@@ -30,7 +30,7 @@ class AvaliacaoModel(Base):
             filme_id=entity.filme_id,
             comentario=entity.comentario,
             quant=entity.avaliacao,
-            data=entity.data
+            data=entity.data,
         )
 
     def to_entity(self) -> Avaliacao:
@@ -40,5 +40,5 @@ class AvaliacaoModel(Base):
             filme_id=self.filme_id,
             comentario=self.comentario,
             avaliacao=self.quant,
-            data=self.data
+            data=self.data,
         )
