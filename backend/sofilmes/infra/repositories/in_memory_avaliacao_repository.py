@@ -37,7 +37,7 @@ class InMemoryAvaliacaoRepository(AvaliacoesRepository):
 
     def criarAvaliacao(self, avaliacao: Avaliacao) -> Avaliacao:
         self._avaliacoes[avaliacao.id] = avaliacao
-        return avaliacao
+        return self._avaliacoes[avaliacao.id]
 
     def editarAvaliacao(self, avaliacao: Avaliacao) -> Optional[Avaliacao]:
         if avaliacao.id in self._avaliacoes:

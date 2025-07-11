@@ -1,3 +1,4 @@
+import datetime
 from sofilmes.domain.entities.filme import Filme
 from sofilmes.domain.entities.usuario import Usuario
 from sofilmes.domain.value_objects.email_vo import Email
@@ -37,6 +38,7 @@ def test_create_avaliacao():
         id=str(uuid.uuid4()),
         user_id=str(uuid.uuid4()),
         filme_id=str(uuid.uuid4()),
+        data=datetime.datetime(2025, 6, 1),
         avaliacao=5,
         comentario="Muito bom",
     )

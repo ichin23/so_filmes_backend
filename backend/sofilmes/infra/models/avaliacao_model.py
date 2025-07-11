@@ -1,3 +1,4 @@
+import datetime
 import sqlalchemy as sa
 from sqlalchemy.orm import Mapped, mapped_column
 from sofilmes.infra.database import Base
@@ -16,7 +17,7 @@ class AvaliacaoModel(Base):
     )
     comentario: Mapped[str] = mapped_column(sa.String, nullable=False)
     quant: Mapped[float] = mapped_column(sa.Float, nullable=False)
-    data: Mapped[str] = mapped_column(sa.String, nullable=False)
+    data: Mapped[datetime.datetime] = mapped_column(sa.DateTime, nullable=False)
 
     user = sa.orm.relationship("UserModel", back_populates="avaliacoes")
     filme = sa.orm.relationship("FilmeModel", back_populates="avaliacoes")
@@ -29,7 +30,7 @@ class AvaliacaoModel(Base):
             filme_id=entity.filme_id,
             comentario=entity.comentario,
             quant=entity.avaliacao,
-            # TODO:data=entity.data
+            data=entity.data
         )
 
     def to_entity(self) -> Avaliacao:
@@ -39,5 +40,5 @@ class AvaliacaoModel(Base):
             filme_id=self.filme_id,
             comentario=self.comentario,
             avaliacao=self.quant,
-            # data=self.data
+            data=self.data
         )

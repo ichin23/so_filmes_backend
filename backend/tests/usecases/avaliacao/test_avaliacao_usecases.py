@@ -1,3 +1,4 @@
+import datetime
 from sofilmes.domain.entities.avaliacao import Avaliacao
 import uuid
 from sofilmes.infra.repositories.in_memory_avaliacao_repository import (
@@ -17,6 +18,7 @@ def create_test_avaliacao(user_id=None, filme_id=None):
         id=str(uuid.uuid4()),
         user_id=user_id or str(uuid.uuid4()),
         filme_id=filme_id or str(uuid.uuid4()),
+        data=datetime.datetime(2025, 6, 1),
         avaliacao=5,
         comentario="Muito bom",
     )
