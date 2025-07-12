@@ -1,5 +1,9 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
+from sofilmes.domain.entities.avaliacao import Avaliacao
+from sofilmes.api.schemas.filme_schema import FilmeOutput
+
+from sofilmes.api.schemas.user_schema import UserOutput
 
 
 class CreateAvaliacaoInput(BaseModel):
@@ -12,18 +16,34 @@ class CreateAvaliacaoInput(BaseModel):
 
 
 class AvaliacaoOutput(BaseModel):
-    id: str
-    filme_id: str
-    user_id: str
+    id: str = Field(..., description="ID do post")
     comentario: str
     avaliacao: float
+    user: UserOutput = Field(..., description="Dados do usuário que está postando")
+    filme: FilmeOutput = Field(..., description="Dados do filme que está sendo postado")
 
     @classmethod
     def from_entity(cls, avaliacao):
         return cls(
             id=avaliacao.id,
-            filme_id=avaliacao.filme_id,
-            user_id=avaliacao.user_id,
+            filme=avaliacao.filme,
+            user_id=avaliacao.user,
             comentario=avaliacao.comentario,
             avaliacao=avaliacao.avaliacao,
         )
+
+
+def avaliacao_to_output(avaliacao: Avaliacao) -> AvaliacaoOutput:
+    return AvaliacaoOutput(
+        id=avaliacao.id,
+        filme=FilmeOutput.from_entity(avaliacao.filme),
+        user=UserOutput.from_entity(avaliacao.user),
+        user_id=avaliacao.user_id,
+        filme_id=avaliacao.filme_id,
+        avaliacao=avaliacao.avaliacao,
+        comentario=avaliacao.comentario,
+    )
+
+
+def avaliacoes_to_output(avaliacoes: list[Avaliacao]) -> list[AvaliacaoOutput]:
+    return [avaliacao_to_output(avaliacao) for avaliacao in avaliacoes]

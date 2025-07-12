@@ -12,7 +12,7 @@ def test_create_usuario() -> Usuario:
         id=str(uuid.uuid4()),
         nome="Test Usuario",
         email=Email("test@example.com"),
-        senha=Password("secur3Pass"),
+        senha=Password("secur3Pas@*"),
         username="usuario",
     )
     assert usuario.nome == "Test Usuario"

@@ -31,11 +31,15 @@ class AvaliacaoModel(Base):
             comentario=entity.comentario,
             quant=entity.avaliacao,
             data=entity.data,
+            filme=entity.filme,
+            user=entity.user,
         )
 
     def to_entity(self) -> Avaliacao:
         return Avaliacao(
             id=self.id,
+            user=self.user.to_entity(),
+            filme=self.filme.to_entity(),
             user_id=self.user_id,
             filme_id=self.filme_id,
             comentario=self.comentario,

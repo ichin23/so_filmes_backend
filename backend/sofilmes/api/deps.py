@@ -1,22 +1,23 @@
-from sofilmes.infra.repositories.in_memory_usuario_repository import (
-    InMemoryUsuarioRepository,
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError, jwt
+from sofilmes.domain.repositories.usuario_repositories import (
+    UsuarioRepository as UserRepository,
 )
-from sofilmes.infra.repositories.in_memory_filme_repository import (
-    InMemoryFilmeRepository,
-)
-from sofilmes.infra.repositories.in_memory_avaliacao_repository import (
-    InMemoryAvaliacaoRepository,
-)
-
-from collections.abc import AsyncGenerator
+from sofilmes.api.settings import settings
+from sofilmes.domain.entities.usuario import Usuario
 from sqlalchemy.ext.asyncio import AsyncSession
+from collections.abc import AsyncGenerator
 from sofilmes.infra.database import async_session
-
-
-# Instâncias em memória para simulação
-user_repo = InMemoryUsuarioRepository()
-filme_repo = InMemoryFilmeRepository()
-avaliacao_repo_instance = InMemoryAvaliacaoRepository()
+from sofilmes.infra.repositories.sqlalchemy.sqlalchemy_user_repository import (
+    SQLAlchemyUserRepository,
+)
+from sofilmes.infra.repositories.sqlalchemy.sqlalchemy_filme_repository import (
+    SQLAlchemyFilmeRepository,
+)
+from sofilmes.infra.repositories.sqlalchemy.sqlalchemy_avaliacao_repsoitory import (
+    SQLAlchemyAvaliacaoRepository,
+)
 
 
 async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
@@ -24,5 +25,54 @@ async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
         yield session
 
 
-def avaliacao_repo():
-    return avaliacao_repo_instance
+async def get_user_repository(
+    db: AsyncSession = Depends(get_db_session),
+) -> SQLAlchemyUserRepository:
+    return SQLAlchemyUserRepository(db)
+
+
+async def get_filmes_repository(
+    db: AsyncSession = Depends(get_db_session),
+) -> SQLAlchemyFilmeRepository:
+    return SQLAlchemyFilmeRepository(db)
+
+
+async def get_avaliacao_repository(
+    db: AsyncSession = Depends(get_db_session),
+) -> SQLAlchemyAvaliacaoRepository:
+    return SQLAlchemyAvaliacaoRepository(db)
+
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
+
+
+async def get_current_user(
+    token: str = Depends(oauth2_scheme),
+    user_repo: UserRepository = Depends(get_user_repository),
+) -> Usuario:
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+    try:
+        print("validade payload:")
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+        )
+        print(payload)
+        user_id: str = str(payload.get("sub"))
+        if user_id is None:
+            raise credentials_exception
+        user = await user_repo.get_by_id(user_id)
+        if user is None:
+            raise credentials_exception
+        await user_repo.set_current_usuario(user)
+    except JWTError:
+        raise credentials_exception
+
+    user = await user_repo.get_current_usuario()
+    if user is None:
+        raise credentials_exception
+    return user

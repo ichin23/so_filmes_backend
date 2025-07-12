@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr, Field
-from typing import Literal
+from typing import List, TYPE_CHECKING
+from sofilmes.domain.entities.usuario import Usuario
 
 
 class RegisterUserInput(BaseModel):
@@ -35,7 +36,8 @@ class UserOutput(BaseModel):
         return cls(
             id=user.id,
             nome=user.nome,
-            email=user.email.value,
+            username=user.username,
+            email=str(user.email),
             # role=user.role,
         )
 
@@ -43,3 +45,18 @@ class UserOutput(BaseModel):
 class RegisterUserResponse(BaseModel):
     message: str
     user: UserOutput
+
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str
+    user: UserOutput
+
+
+def user_to_output(user: Usuario) -> UserOutput:
+    return UserOutput(
+        id=user.id,
+        nome=user.nome,
+        username=user.username,
+        email=str(user.email),
+    )

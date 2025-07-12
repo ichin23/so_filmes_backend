@@ -21,6 +21,7 @@
     "ms-vscode.makefile-tools",
     "ms-azuretools.vscode-docker",
     "humao.rest-client",
-    "Bar.python-import-helper"
+    "Bar.python-import-helper",
+    "google.geminicodeassist"
   ]
 }

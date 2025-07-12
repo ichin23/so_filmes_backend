@@ -7,5 +7,5 @@ class GetAvaliacaoUseCase:
     def __init__(self, repository: AvaliacoesRepository):
         self.repository = repository
 
-    def execute(self, avaliacao_id: str) -> Optional[Avaliacao]:
-        return self.repository.getAvaliacao(avaliacao_id)
+    async def execute(self, avaliacao_id: str) -> Optional[Avaliacao]:
+        return await self.repository.getAvaliacao(avaliacao_id)

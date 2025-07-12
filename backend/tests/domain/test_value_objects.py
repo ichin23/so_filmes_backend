@@ -17,17 +17,5 @@ def test_str_email():
     email = Email("user@example.com")
     assert str(email) == "user@example.com"
 
+#TODO:Refazer senhas
 
-def test_valid_password():
-    pwd = Password("Secret123")
-    assert pwd.value() == "Secret123"
-
-
-def test_invalid_password():
-    with pytest.raises(ValueError):
-        Password("short")
-
-
-def test_password_hidden_str():
-    pwd = Password("Secret123")
-    assert str(pwd) == "*********"

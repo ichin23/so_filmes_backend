@@ -7,17 +7,20 @@ class InMemoryFilmeRepository(FilmesRepository):
     def __init__(self):
         self._filmes = {}
 
-    def get_all(self) -> List[Filme]:
+    async def get_all(self) -> List[Filme]:
         return list(self._filmes.values())
 
-    def get_by_id(self, id) -> Optional[Filme]:
+    async def get_by_id(self, id) -> Optional[Filme]:
         return self._filmes.get(id)
+    
+    async def get_mais_avaliados(self):
+        return self._filmes
 
-    def create(self, filme):
+    async def create(self, filme):
         self._filmes[filme.id] = filme
         return filme
 
-    def update(self, filme) -> Optional[Filme]:
+    async def update(self, filme) -> Optional[Filme]:
         if filme.id in self._filmes:
             self._filmes[filme.id] = filme
             return filme

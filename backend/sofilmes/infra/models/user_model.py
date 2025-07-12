@@ -20,7 +20,7 @@ class UserModel(Base):
     senha: Mapped[str] = mapped_column(sa.String, nullable=False)
 
     avaliacoes = sa.orm.relationship(
-        "AvaliacaoModel", back_populates="user", cascade="all, delete"
+        "AvaliacaoModel", lazy="selectin", back_populates="user", cascade="all, delete"
     )
 
     @classmethod
@@ -28,8 +28,9 @@ class UserModel(Base):
         return cls(
             id=entity.id,
             nome=entity.nome,
-            email=entity.email.value,
-            senha=entity.senha.value,
+            username=entity.username,
+            email=str(entity.email),
+            senha=str(entity.senha),
         )
 
     def to_entity(self) -> Usuario:

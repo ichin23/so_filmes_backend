@@ -5,17 +5,17 @@ from typing import Optional
 
 class FilmesRepository(ABC):
     @abstractmethod
-    def get_all(self) -> list[Filme]:
+    async def get_all(self) -> list[Filme]:
         pass
 
     @abstractmethod
-    def get_by_id(self, post_id: str) -> Optional[Filme]:
+    async def get_mais_avaliados(self) -> list[Filme]:
         pass
 
     @abstractmethod
-    def create(self, filme: Filme) -> Filme:
+    async def get_by_id(self, post_id: str) -> Optional[Filme]:
         pass
 
     @abstractmethod
-    def update(self, filme: Filme) -> Optional[Filme]:
+    async def create(self, filme: Filme) -> Filme:
         pass

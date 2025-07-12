@@ -5,5 +5,5 @@ class GetAvaliacoesByUsuarioUseCase:
     def __init__(self, repo: AvaliacoesRepository):
         self._repo = repo
 
-    def execute(self, user_id):
-        return self._repo.getAvaliacoesByUser(user_id)
+    async def execute(self, user_id):
+        return await self._repo.getAvaliacoesByUser(user_id)

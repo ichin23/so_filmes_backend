@@ -7,5 +7,5 @@ class RegisterUsuarioUseCase:
     def __init__(self, repository: UsuarioRepository):
         self.repository = repository
 
-    def execute(self, usuario: Usuario) -> Optional[Usuario]:
-        return self.repository.register(usuario)
+    async def execute(self, usuario: Usuario) -> Usuario:
+        return await self.repository.register(usuario)

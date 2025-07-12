@@ -1,69 +1,101 @@
 import datetime
 from fastapi import APIRouter, Depends, HTTPException
-from sofilmes.usecases.avaliacao.add_avaliacao import CreateAvalicaoUseCase
-from fastapi.security import HTTPAuthorizationCredentials
+from sofilmes.usecases.avaliacao.criar_avaliacao import CriarAvaliacaoUseCase
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sofilmes.usecases.avaliacao.get_avaliacao import GetAvaliacaoUseCase
-from sofilmes.usecases.avaliacao.get_avaliacao_by_user import GetAvaliacaoByUserUseCase
-from sofilmes.usecases.avaliacao.delete_avaliacao import DeleteAvaliacaoUseCase
-from sofilmes.usecases.avaliacao.set_avaliacao import SetAvaliacaoUseCase
-from sofilmes.api.schemas.avaliacao_schema import AvaliacaoOutput, CreateAvaliacaoInput
+from sofilmes.usecases.avaliacao.get_avaliacoes_by_usuario import (
+    GetAvaliacoesByUsuarioUseCase,
+)
+from sofilmes.usecases.avaliacao.remover_avaliacao import RemoverAvaliacao
+from sofilmes.usecases.avaliacao.editar_avaliacao import EditarAvaliacaoUseCase
+from sofilmes.api.schemas.avaliacao_schema import (
+    avaliacao_to_output,
+    AvaliacaoOutput,
+    avaliacoes_to_output,
+    CreateAvaliacaoInput,
+)
 from typing import List
 from sofilmes.domain.repositories.avaliacoes_repositories import AvaliacoesRepository
-from sofilmes.api.deps import avaliacao_repo
+from sofilmes.api.deps import get_avaliacao_repository, get_current_user
 from sofilmes.domain.entities.avaliacao import Avaliacao
 import uuid
-from sofilmes.usecases.avaliacao.set_avaliacao import SetAvaliacaoUseCase
+from sofilmes.domain.entities.usuario import Usuario
+from sofilmes.usecases.avaliacao.get_ultimas_avaliacoes import (
+    GetUltimasAvaliacoesUseCase,
+)
 
-
+security = HTTPBearer()
 router = APIRouter()
 
 # TODO: Adicionar types de retorno da rotas
 
 
-@router.get("/byuser/{id_user}", response_model=List[AvaliacaoOutput])
-def get_avaliacoes_by_user(id_user: str):
-    usecase = GetAvaliacaoByUserUseCase(avaliacao_repo())
-    avaliacoes = usecase.execute(id_user)
-    return avaliacoes
+@router.get("/byuser/", response_model=List[AvaliacaoOutput])
+async def get_avaliacoes_by_user(
+    avaliacao_repo: AvaliacoesRepository = Depends(get_avaliacao_repository),
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    user: Usuario = Depends(get_current_user),
+):
+    usecase = GetAvaliacoesByUsuarioUseCase(avaliacao_repo)
+    avaliacoes = await usecase.execute(user.id)
+    return avaliacoes_to_output(avaliacoes)
 
 
 @router.get("/byid/{avaliacao_id}", response_model=AvaliacaoOutput)
-def get_avaliacao_by_id(avaliacao_id: str):
-    usecase = GetAvaliacaoUseCase(avaliacao_repo())
-    avaliacao = usecase.execute(avaliacao_id)
+async def get_avaliacao_by_id(
+    avaliacao_id: str,
+    avaliacao_repo: AvaliacoesRepository = Depends(get_avaliacao_repository),
+):
+    usecase = GetAvaliacaoUseCase(avaliacao_repo)
+    avaliacao = await usecase.execute(avaliacao_id)
     if not avaliacao:
         raise HTTPException(status_code=404, detail="Avaliação not found")
-    return avaliacao
+    return avaliacao_to_output(avaliacao)
+
+
+@router.get("/ultimas", response_model=List[AvaliacaoOutput])
+async def get_ultimas_avaliacoes(
+    avaliacao_repo: AvaliacoesRepository = Depends(get_avaliacao_repository),
+):
+    usecase = GetUltimasAvaliacoesUseCase(avaliacao_repo)
+    avaliacoes = await usecase.execute()
+    print(avaliacoes[0].user)
+    return avaliacoes_to_output(avaliacoes)
 
 
 @router.post("/", response_model=AvaliacaoOutput)
-def create_avaliacao(
+async def create_avaliacao(
     data: CreateAvaliacaoInput,
+    avaliacao_repo: AvaliacoesRepository = Depends(get_avaliacao_repository),
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    user: Usuario = Depends(get_current_user),
 ):
-    usecase = CreateAvalicaoUseCase(avaliacao_repo())
+    usecase = CriarAvaliacaoUseCase(avaliacao_repo)
     avaliacao = Avaliacao(
         id=str(uuid.uuid4()),
-        user_id=data.user_id,
+        user_id=user.id,
         filme_id=data.filme_id,
         data=datetime.datetime.now(),
         avaliacao=data.avaliacao,
         comentario=data.comentario,
     )
 
-    created_avaliacao = usecase.execute(avaliacao)
-    return AvaliacaoOutput.from_entity(created_avaliacao)
+    created_avaliacao = await usecase.execute(avaliacao)
+    if not created_avaliacao:
+        raise HTTPException(status_code=400, detail="Failed to add avaliacao")
+    return avaliacao_to_output(created_avaliacao)
 
 
 @router.delete("/{avaliacao_id}")
-def delete_avaliacao(
+async def delete_avaliacao(
     avaliacao_id: str,
-    repo: AvaliacoesRepository = Depends(avaliacao_repo),
+    avaliacao_repo: AvaliacoesRepository = Depends(get_avaliacao_repository),
 ):
     # print(" ID recebido para deletar:", avaliacao_id)
     # print(" IDs existentes:", list(repo._avaliacoes.keys()))
 
-    usecase = DeleteAvaliacaoUseCase(repo)
-    success = usecase.execute(avaliacao_id)
+    usecase = RemoverAvaliacao(avaliacao_repo)
+    success = await usecase.execute(avaliacao_id)
 
     # print(" ID recebido para deletar:", avaliacao_id)
     # print(" IDs existentes:", list(repo._avaliacoes.keys()))
@@ -73,11 +105,20 @@ def delete_avaliacao(
 
 
 @router.put("/{avaliacao_id}", response_model=AvaliacaoOutput)
-def update_avaliacao(avaliacao_id: str, data: CreateAvaliacaoInput):
-    repo = avaliacao_repo()
-    usecase = SetAvaliacaoUseCase(repo)
+async def update_avaliacao(
+    avaliacao_id: str,
+    data: CreateAvaliacaoInput,
+    avaliacao_repo: AvaliacoesRepository = Depends(get_avaliacao_repository),
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+):
 
-    avaliacao = Avaliacao(
+    usecaseGet = GetAvaliacaoUseCase(avaliacao_repo)
+    existing_avaliacao = usecaseGet.execute(avaliacao_id)
+
+    if not existing_avaliacao:
+        raise HTTPException(status_code=404, detail="Post not found")
+
+    updated_avaliacao = Avaliacao(
         id=avaliacao_id,
         user_id=data.user_id,
         filme_id=data.filme_id,
@@ -85,11 +126,10 @@ def update_avaliacao(avaliacao_id: str, data: CreateAvaliacaoInput):
         comentario=data.comentario,
         avaliacao=data.avaliacao,
     )
+    usecase = EditarAvaliacaoUseCase(avaliacao_repo)
 
-    success = usecase.execute(avaliacao)
+    success = await usecase.execute(updated_avaliacao)
     if not success:
-        raise HTTPException(
-            status_code=404, detail="Avaliação não encontrada para atualização"
-        )
+        raise HTTPException(status_code=400, detail="Avaliação não atualizada")
 
-    return AvaliacaoOutput.from_entity(avaliacao)
+    return avaliacao_to_output(success)

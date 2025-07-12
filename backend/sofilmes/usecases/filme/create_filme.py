@@ -6,5 +6,5 @@ class CreateFilmeUseCase:
     def __init__(self, repository: FilmesRepository):
         self.repository = repository
 
-    def execute(self, filme: Filme) -> Filme:
-        return self.repository.create(filme)
+    async def execute(self, filme: Filme) -> Filme:
+        return await self.repository.create(filme)

@@ -1,6 +1,6 @@
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import ARRAY
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sofilmes.infra.database import Base
 from typing import List
 from sofilmes.domain.entities.filme import Filme
@@ -18,6 +18,14 @@ class FilmeModel(Base):
     ano: Mapped[int] = mapped_column(sa.Integer, nullable=False)
     generos: Mapped[List[str]] = mapped_column(ARRAY(sa.String), nullable=False)
     diretor: Mapped[str] = mapped_column(sa.String, nullable=False)
+
+    avaliacoes = relationship(
+        "AvaliacaoModel",
+        back_populates="filme",
+        lazy="joined",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
 
     @classmethod
     def from_entity(cls, entity: Filme) -> "FilmeModel":

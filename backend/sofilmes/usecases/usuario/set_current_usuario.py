@@ -6,5 +6,5 @@ class SetCurrentUsuarioUseCase:
     def __init__(self, repository: UsuarioRepository):
         self.repository = repository
 
-    def execute(self, usuario: Usuario) -> None:
-        self.repository.set_current_usuario(usuario)
+    async def execute(self, usuario: Usuario) -> None:
+        await self.repository.set_current_usuario(usuario)

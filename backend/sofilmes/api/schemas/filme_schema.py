@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import List
+from sofilmes.domain.entities.filme import Filme
 
 
 class FilmeInput(BaseModel):
@@ -45,3 +46,21 @@ class FilmeOutput(BaseModel):
             generos=filme.generos,
             diretor=filme.diretor,
         )
+
+
+def filme_to_output(filme: Filme) -> FilmeOutput:
+    return FilmeOutput(
+        id=filme.id,
+        titulo=filme.titulo,
+        tituloOriginal=filme.tituloOriginal,
+        capa=filme.capa,
+        ano=filme.ano,
+        descricao=filme.descricao,
+        avaliacao=filme.avaliacao,
+        diretor=filme.diretor,
+        generos=filme.generos,
+    )
+
+
+def filmes_to_output(filmes: list[Filme]) -> List[FilmeOutput]:
+    return [filme_to_output(filme) for filme in filmes]

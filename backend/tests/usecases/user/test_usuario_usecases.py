@@ -1,8 +1,9 @@
+import pytest
 import uuid
 from sofilmes.domain.entities.usuario import Usuario
 from sofilmes.domain.value_objects.senha_vo import Password
 from sofilmes.domain.value_objects.email_vo import Email
-from sofilmes.infra.repositories.in_memory_usuario_repository import (
+from sofilmes.infra.repositories.in_memory.in_memory_usuario_repository import (
     InMemoryUsuarioRepository,
 )
 from sofilmes.usecases.usuario.register_usuario import RegisterUsuarioUseCase
@@ -17,74 +18,79 @@ def create_test_usuario() -> Usuario:
         id=str(uuid.uuid4()),
         nome="Test Usuario",
         email=Email("test@example.com"),
-        senha=Password("secur3Pass"),
+        senha=Password("secur3Pass@"),
         username="usuario",
     )
 
-
-def test_register_usuario():
+@pytest.mark.asyncio
+async def test_register_usuario():
     repo = InMemoryUsuarioRepository()
     usecase = RegisterUsuarioUseCase(repo)
     usuario = create_test_usuario()
 
-    result = usecase.execute(usuario)
+    result = await usecase.execute(usuario)
 
     assert result == usuario
-    assert repo.get_current_usuario() == usuario
+    assert await repo.get_current_usuario() == usuario
 
 
-def test_login_usuario_success():
+@pytest.mark.asyncio
+async def test_login_usuario_success():
     repo = InMemoryUsuarioRepository()
     usuario = create_test_usuario()
     repo.register(usuario)
 
     usecase = LoginUsuarioUseCase(repo)
-    result = usecase.execute(usuario.email, usuario.senha)
+    result = await  usecase.execute(usuario.email, usuario.senha)
 
     assert result == usuario
-    assert repo.get_current_usuario() == usuario
+    assert await repo.get_current_usuario() == usuario
 
 
-def test_login_usuario_failure():
+@pytest.mark.asyncio
+async def test_login_usuario_failure():
     repo = InMemoryUsuarioRepository()
     usecase = LoginUsuarioUseCase(repo)
     email = Email("notfound@example.com")
-    senha = Password("wrongP1ss")
+    senha = Password("wrongP1ss@")
 
-    result = usecase.execute(email, senha)
+    result = await  usecase.execute(email, senha)
 
     assert result is None
-    assert repo.get_current_usuario() is None
+    assert await repo.get_current_usuario() is None
 
 
-def test_logout_usuario():
+@pytest.mark.asyncio
+async def test_logout_usuario():
     repo = InMemoryUsuarioRepository()
     usuario = create_test_usuario()
     repo.register(usuario)
     repo.login(usuario.email, usuario.senha)
 
     usecase = LogoutUsuarioUseCase(repo)
-    usecase.execute()
+    await usecase.execute()
 
-    assert repo.get_current_usuario() is None
+    assert await repo.get_current_usuario() is None
 
 
-def test_get_current_usuario():
+@pytest.mark.asyncio
+async def test_get_current_usuario():
     repo = InMemoryUsuarioRepository()
     usuario = create_test_usuario()
     repo.register(usuario)
 
     usecase = GetCurrentUsuarioUseCase(repo)
-    result = usecase.execute()
+    result = await usecase.execute()
 
     assert result == usuario
 
 
-def test_set_current_usuario():
+@pytest.mark.asyncio
+async def test_set_current_usuario():
     repo = InMemoryUsuarioRepository()
     usuario = create_test_usuario()
 
     usecase = SetCurrentUsuarioUseCase(repo)
-    usecase.execute(usuario)
+    await usecase.execute(usuario)
 
-    assert repo.get_current_usuario() == usuario
+    assert await repo.get_current_usuario() == usuario

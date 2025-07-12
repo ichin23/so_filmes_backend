@@ -7,21 +7,25 @@ from sofilmes.domain.value_objects.email_vo import Email
 
 class UsuarioRepository(ABC):
     @abstractmethod
-    def login(self, email: Email, password: Password) -> Optional[Usuario]:
+    async def login(self, email: Email, password: Password) -> Optional[Usuario]:
         pass
 
     @abstractmethod
-    def register(self, usuario: Usuario) -> Optional[Usuario]:
+    async def register(self, usuario: Usuario) -> Usuario:
         pass
 
     @abstractmethod
-    def logout(self) -> None:
+    async def logout(self) -> None:
         pass
 
     @abstractmethod
-    def get_current_usuario(self) -> Usuario | None:
+    async def get_by_id(self, id: str) -> Optional[Usuario]:
         pass
 
     @abstractmethod
-    def set_current_usuario(self, usuario: Usuario) -> None:
+    async def get_current_usuario(self) -> Usuario | None:
+        pass
+
+    @abstractmethod
+    async def set_current_usuario(self, usuario: Usuario) -> None:
         pass

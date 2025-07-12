@@ -1,7 +1,8 @@
 import datetime
+import pytest
 from sofilmes.domain.entities.avaliacao import Avaliacao
 import uuid
-from sofilmes.infra.repositories.in_memory_avaliacao_repository import (
+from sofilmes.infra.repositories.in_memory.in_memory_avaliacao_repository import (
     InMemoryAvaliacaoRepository,
 )
 from sofilmes.usecases.avaliacao.criar_avaliacao import CriarAvaliacaoUseCase
@@ -23,19 +24,19 @@ def create_test_avaliacao(user_id=None, filme_id=None):
         comentario="Muito bom",
     )
 
-
-def test_create_avaliacao():
+@pytest.mark.asyncio
+async def test_create_avaliacao():
     repo = InMemoryAvaliacaoRepository()
     avaliacao = create_test_avaliacao()
 
     usecase = CriarAvaliacaoUseCase(repo)
-    result = usecase.execute(avaliacao)
+    result = await usecase.execute(avaliacao)
 
     assert result == avaliacao
     assert repo._avaliacoes[avaliacao.id] == avaliacao
 
-
-def test_get_avaliacoes_by_filme():
+@pytest.mark.asyncio
+async def test_get_avaliacoes_by_filme():
     repo = InMemoryAvaliacaoRepository()
     filme_id = str(uuid.uuid4())
     avaliacao = create_test_avaliacao(filme_id=filme_id)
@@ -47,15 +48,15 @@ def test_get_avaliacoes_by_filme():
     repo.criarAvaliacao(avaliacao3)
 
     usecase = GetAvaliacoesByFilmeUseCase(repo)
-    result = usecase.execute(filme_id)
+    result = await usecase.execute(filme_id)
 
     assert avaliacao in result
     assert avaliacao2 in result
     assert avaliacao3 not in result
     assert len(result) == 2
 
-
-def test_get_avaliacaoes_by_user():
+@pytest.mark.asyncio
+async def test_get_avaliacaoes_by_user():
     repo = InMemoryAvaliacaoRepository()
     user_id = str(uuid.uuid4())
     avaliacao = create_test_avaliacao(user_id=user_id)
@@ -67,17 +68,17 @@ def test_get_avaliacaoes_by_user():
     repo.criarAvaliacao(avaliacao3)
 
     usecase = GetAvaliacoesByUsuarioUseCase(repo)
-    result = usecase.execute(user_id)
+    result = await usecase.execute(user_id)
 
     assert avaliacao in result
     assert avaliacao2 in result
     assert avaliacao3 not in result
     assert len(result) == 2
 
-
-def test_get_avaliacaoes_by_filme_empty():
+@pytest.mark.asyncio
+async def test_get_avaliacaoes_by_filme_empty():
     repo = InMemoryAvaliacaoRepository()
     usecase = GetAvaliacoesByFilmeUseCase(repo)
-    result = usecase.execute("filme-1")
+    result = await usecase.execute("filme-1")
 
     assert result == []
