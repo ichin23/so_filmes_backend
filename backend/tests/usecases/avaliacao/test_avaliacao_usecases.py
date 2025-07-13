@@ -24,6 +24,7 @@ def create_test_avaliacao(user_id=None, filme_id=None):
         comentario="Muito bom",
     )
 
+
 @pytest.mark.asyncio
 async def test_create_avaliacao():
     repo = InMemoryAvaliacaoRepository()
@@ -35,6 +36,7 @@ async def test_create_avaliacao():
     assert result == avaliacao
     assert repo._avaliacoes[avaliacao.id] == avaliacao
 
+
 @pytest.mark.asyncio
 async def test_get_avaliacoes_by_filme():
     repo = InMemoryAvaliacaoRepository()
@@ -43,9 +45,9 @@ async def test_get_avaliacoes_by_filme():
     avaliacao2 = create_test_avaliacao(filme_id=filme_id)
     avaliacao3 = create_test_avaliacao()
 
-    repo.criarAvaliacao(avaliacao)
-    repo.criarAvaliacao(avaliacao2)
-    repo.criarAvaliacao(avaliacao3)
+    await repo.criarAvaliacao(avaliacao)
+    await repo.criarAvaliacao(avaliacao2)
+    await repo.criarAvaliacao(avaliacao3)
 
     usecase = GetAvaliacoesByFilmeUseCase(repo)
     result = await usecase.execute(filme_id)
@@ -55,6 +57,7 @@ async def test_get_avaliacoes_by_filme():
     assert avaliacao3 not in result
     assert len(result) == 2
 
+
 @pytest.mark.asyncio
 async def test_get_avaliacaoes_by_user():
     repo = InMemoryAvaliacaoRepository()
@@ -63,9 +66,9 @@ async def test_get_avaliacaoes_by_user():
     avaliacao2 = create_test_avaliacao(user_id=user_id)
     avaliacao3 = create_test_avaliacao()
 
-    repo.criarAvaliacao(avaliacao)
-    repo.criarAvaliacao(avaliacao2)
-    repo.criarAvaliacao(avaliacao3)
+    await repo.criarAvaliacao(avaliacao)
+    await repo.criarAvaliacao(avaliacao2)
+    await repo.criarAvaliacao(avaliacao3)
 
     usecase = GetAvaliacoesByUsuarioUseCase(repo)
     result = await usecase.execute(user_id)
@@ -74,6 +77,7 @@ async def test_get_avaliacaoes_by_user():
     assert avaliacao2 in result
     assert avaliacao3 not in result
     assert len(result) == 2
+
 
 @pytest.mark.asyncio
 async def test_get_avaliacaoes_by_filme_empty():
