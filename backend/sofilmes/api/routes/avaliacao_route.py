@@ -10,6 +10,7 @@ from sofilmes.usecases.avaliacao.remover_avaliacao import RemoverAvaliacao
 from sofilmes.usecases.avaliacao.editar_avaliacao import EditarAvaliacaoUseCase
 from sofilmes.api.schemas.avaliacao_schema import (
     avaliacao_to_output,
+    AvaliacaoFilmeEUserInput,
     AvaliacaoOutput,
     avaliacoes_to_output,
     CreateAvaliacaoInput,
@@ -22,6 +23,12 @@ import uuid
 from sofilmes.domain.entities.usuario import Usuario
 from sofilmes.usecases.avaliacao.get_ultimas_avaliacoes import (
     GetUltimasAvaliacoesUseCase,
+)
+from sofilmes.usecases.avaliacao.get_avaliacoes_by_filme import (
+    GetAvaliacoesByFilmeUseCase,
+)
+from sofilmes.usecases.avaliacao.get_avaliacoes_by_filme_e_usuario import (
+    GetAvaliacoesByUsuarioEFilmeUseCase,
 )
 
 security = HTTPBearer()
@@ -39,6 +46,31 @@ async def get_avaliacoes_by_user(
     usecase = GetAvaliacoesByUsuarioUseCase(avaliacao_repo)
     avaliacoes = await usecase.execute(user.id)
     return avaliacoes_to_output(avaliacoes)
+
+
+@router.get("/byfilme/{filme_id}", response_model=List[AvaliacaoOutput])
+async def get_avaliacoes_by_filme(
+    filme_id: str,
+    avaliacao_repo: AvaliacoesRepository = Depends(get_avaliacao_repository),
+):
+    usecase = GetAvaliacoesByFilmeUseCase(avaliacao_repo)
+    avaliacoes = await usecase.execute(filme_id)
+
+    return avaliacoes_to_output(avaliacoes)
+
+
+@router.post("/byfilmeeuser", response_model=AvaliacaoOutput)
+async def get_avaliacoes_by_filme_e_user(
+    data: AvaliacaoFilmeEUserInput,
+    avaliacao_repo: AvaliacoesRepository = Depends(get_avaliacao_repository),
+):
+    usecase = GetAvaliacoesByUsuarioEFilmeUseCase(avaliacao_repo)
+    avaliacao = await usecase.execute(data.user_id, data.filme_id)
+
+    if not avaliacao:
+        raise HTTPException(status_code=404, detail="Avaliacao not found")
+
+    return avaliacao_to_output(avaliacao)
 
 
 @router.get("/byid/{avaliacao_id}", response_model=AvaliacaoOutput)
@@ -71,6 +103,7 @@ async def create_avaliacao(
     user: Usuario = Depends(get_current_user),
 ):
     usecase = CriarAvaliacaoUseCase(avaliacao_repo)
+
     avaliacao = Avaliacao(
         id=str(uuid.uuid4()),
         user_id=user.id,
@@ -90,6 +123,8 @@ async def create_avaliacao(
 async def delete_avaliacao(
     avaliacao_id: str,
     avaliacao_repo: AvaliacoesRepository = Depends(get_avaliacao_repository),
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    user: Usuario = Depends(get_current_user),
 ):
     # print(" ID recebido para deletar:", avaliacao_id)
     # print(" IDs existentes:", list(repo._avaliacoes.keys()))
@@ -110,6 +145,7 @@ async def update_avaliacao(
     data: CreateAvaliacaoInput,
     avaliacao_repo: AvaliacoesRepository = Depends(get_avaliacao_repository),
     credentials: HTTPAuthorizationCredentials = Depends(security),
+    user: Usuario = Depends(get_current_user),
 ):
 
     usecaseGet = GetAvaliacaoUseCase(avaliacao_repo)
@@ -120,7 +156,7 @@ async def update_avaliacao(
 
     updated_avaliacao = Avaliacao(
         id=avaliacao_id,
-        user_id=data.user_id,
+        user_id=user.id,
         filme_id=data.filme_id,
         data=datetime.datetime.now(),
         comentario=data.comentario,

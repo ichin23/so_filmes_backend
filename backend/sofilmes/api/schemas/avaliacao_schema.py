@@ -8,11 +8,16 @@ from sofilmes.api.schemas.user_schema import UserOutput
 
 class CreateAvaliacaoInput(BaseModel):
     filme_id: str = Field(..., description="ID do filme avaliado")
-    user_id: str = Field(..., description="ID do usuário que fez a avaliação")
+    # user_id: str = Field(..., description="ID do usuário que fez a avaliação")
     comentario: str = Field(
         ..., min_length=1, max_length=500, description="Comentario da avaliação"
     )
     avaliacao: float = Field(..., ge=1, le=5, description="Nota do Filme")
+
+
+class AvaliacaoFilmeEUserInput(BaseModel):
+    filme_id: str = Field(..., description="ID do filme avaliado")
+    user_id: str = Field(..., description="ID do usuário que fez a avaliação")
 
 
 class AvaliacaoOutput(BaseModel):

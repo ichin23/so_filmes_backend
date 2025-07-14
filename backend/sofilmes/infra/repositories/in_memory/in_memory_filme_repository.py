@@ -13,6 +13,10 @@ class InMemoryFilmeRepository(FilmesRepository):
         return list(self._filmes.values())
 
     @pytest.mark.asyncio
+    async def get_ultimos_filmes(self):
+        return list(self._filmes.values()).sort(lambda filme: filme.ano)
+
+    @pytest.mark.asyncio
     async def get_by_id(self, id) -> Optional[Filme]:
         return self._filmes.get(id)
 

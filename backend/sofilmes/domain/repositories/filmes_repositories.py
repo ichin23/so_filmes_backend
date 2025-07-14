@@ -13,6 +13,10 @@ class FilmesRepository(ABC):
         pass
 
     @abstractmethod
+    async def get_ultimos_filmes(self) -> list[Filme]:
+        pass
+
+    @abstractmethod
     async def get_by_id(self, post_id: str) -> Optional[Filme]:
         pass
 

@@ -18,6 +18,7 @@ from sofilmes.api.deps import get_filmes_repository
 from sofilmes.domain.entities.filme import Filme
 import uuid
 from sofilmes.usecases.filme.get_filmes_mais_avaliados import GetFilmesMaisAvaliados
+from sofilmes.usecases.filme.get_ultimos_filmes import GetUltimosFilmesUseCase
 
 security = HTTPBearer()
 router = APIRouter()
@@ -31,6 +32,16 @@ async def get_all_filmes(
 ):
     usecase = GetAllFilmeUseCase(filme_repo)
     filmes = await usecase.execute()
+    return filmes_to_output(filmes)
+
+
+@router.get("/ultimos", response_model=List[FilmeOutput])
+async def get_ultimos_filmes(
+    filme_repo: FilmesRepository = Depends(get_filmes_repository),
+):
+    usecase = GetUltimosFilmesUseCase(filme_repo)
+    filmes = await usecase.execute()
+
     return filmes_to_output(filmes)
 
 

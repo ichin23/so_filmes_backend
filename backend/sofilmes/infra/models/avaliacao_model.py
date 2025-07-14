@@ -31,8 +31,6 @@ class AvaliacaoModel(Base):
             comentario=entity.comentario,
             quant=entity.avaliacao,
             data=entity.data,
-            filme=entity.filme,
-            user=entity.user,
         )
 
     def to_entity(self) -> Avaliacao:

@@ -1,10 +1,11 @@
 from sofilmes.domain.repositories.avaliacoes_repositories import AvaliacoesRepository
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy import update, delete
+from sqlalchemy import update, delete, func
 from sofilmes.infra.models.avaliacao_model import AvaliacaoModel
 from sqlalchemy.orm import joinedload
 from sofilmes.domain.entities.avaliacao import Avaliacao
+from sofilmes.infra.models.filme_model import FilmeModel
 
 
 class SQLAlchemyAvaliacaoRepository(AvaliacoesRepository):
@@ -15,7 +16,7 @@ class SQLAlchemyAvaliacaoRepository(AvaliacoesRepository):
         smpt = (
             select(AvaliacaoModel)
             .where(AvaliacaoModel.filme_id == filme_id)
-            .options(joinedload(AvaliacaoModel.user))
+            .options(joinedload(AvaliacaoModel.user), joinedload(AvaliacaoModel.filme))
         )
 
         result = await self.__session.execute(smpt)
@@ -61,19 +62,43 @@ class SQLAlchemyAvaliacaoRepository(AvaliacoesRepository):
                 AvaliacaoModel.filme_id == filme_id
                 and AvaliacaoModel.user_id == user_id
             )
-            .options(joinedload(AvaliacaoModel.user))
+            .options(joinedload(AvaliacaoModel.user), joinedload(AvaliacaoModel.filme))
         )
 
         result = await self.__session.execute(smpt)
 
-        return [avaliacao.to_entity() for avaliacao in result.unique().scalars().all()]
+        return result.unique().scalar_one_or_none().to_entity()
 
     async def criarAvaliacao(self, avaliacao: Avaliacao):
+        print(f"{avaliacao.user_id} : {avaliacao.filme_id}")
         model = AvaliacaoModel.from_entity(avaliacao)
         print(model.data)
+        print(f"{model.user_id} : {model.filme_id}")
         self.__session.add(model)
         await self.__session.commit()
-        await self.__session.refresh(model)
+
+        # Calcula a nova média via SELECT
+        result = await self.__session.execute(
+            select(func.avg(AvaliacaoModel.quant)).where(
+                AvaliacaoModel.filme_id == avaliacao.filme_id
+            )
+        )
+        nova_media = result.scalar()
+
+        # Atualiza o campo 'avaliacao' no filme
+        await self.__session.execute(
+            update(FilmeModel)
+            .where(FilmeModel.id == avaliacao.filme_id)
+            .values(avaliacao=nova_media)
+        )
+        await self.__session.commit()
+
+        result = await self.__session.execute(
+            select(AvaliacaoModel)
+            .options(joinedload(AvaliacaoModel.filme), joinedload(AvaliacaoModel.user))
+            .where(AvaliacaoModel.id == model.id)
+        )
+        model = result.unique().scalar_one_or_none()
 
         avaliacao.id = model.id
 

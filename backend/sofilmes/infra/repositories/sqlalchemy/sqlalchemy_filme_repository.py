@@ -18,6 +18,12 @@ class SQLAlchemyFilmeRepository(FilmesRepository):
 
         return [filme.to_entity() for filme in result.unique().scalars().all()]
 
+    async def get_ultimos_filmes(self):
+        smpt = select(FilmeModel).order_by(FilmeModel.ano).limit(15)
+        result = await self.__session.execute(smpt)
+
+        return [filme.to_entity() for filme in result.unique().scalars().all()]
+
     async def get_mais_avaliados(self):
         seven_days_ago = datetime.now() - timedelta(days=7)
 
