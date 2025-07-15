@@ -59,7 +59,7 @@ class SQLAlchemyFilmeRepository(FilmesRepository):
         smpt = select(FilmeModel).where(FilmeModel.id == filme_id)
         result = await self.__session.execute(smpt)
 
-        return result.scalar_one_or_none()
+        return result.unique().scalar_one_or_none()
 
     async def create(self, filme: Filme):
         model = FilmeModel.from_entity(filme)

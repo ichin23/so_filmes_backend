@@ -6,6 +6,7 @@ from sofilmes.infra.models.avaliacao_model import AvaliacaoModel
 from sqlalchemy.orm import joinedload
 from sofilmes.domain.entities.avaliacao import Avaliacao
 from sofilmes.infra.models.filme_model import FilmeModel
+from sqlalchemy.orm import selectinload
 
 
 class SQLAlchemyAvaliacaoRepository(AvaliacoesRepository):
@@ -24,12 +25,22 @@ class SQLAlchemyAvaliacaoRepository(AvaliacoesRepository):
         return [avaliacao.to_entity() for avaliacao in result.unique().scalars().all()]
 
     async def getAvaliacao(self, avaliacao_id: str):
-        smpt = select(AvaliacaoModel).where(AvaliacaoModel.id == avaliacao_id)
+        stmt = (
+            select(AvaliacaoModel)
+            .options(
+                selectinload(AvaliacaoModel.user), 
+                selectinload(AvaliacaoModel.filme)  
+            )
+            .where(AvaliacaoModel.id == avaliacao_id)
+        )
 
-        result = await self.__session.execute(smpt)
+        result = await self.__session.execute(stmt)
 
         model = result.scalar_one_or_none()
+        if model is None:
+            return None
         return model.to_entity()
+
 
     async def getUltimasAvaliacoes(self):
         smpt = (
@@ -104,17 +115,37 @@ class SQLAlchemyAvaliacaoRepository(AvaliacoesRepository):
 
         return model.to_entity()
 
-    async def editarAvaliacao(self, avaliacao: Avaliacao):
-        model = AvaliacaoModel.from_entity(avaliacao)
+    from sqlalchemy.orm import selectinload
+
+    async def editarAvaliacao(self, avaliacao: Avaliacao) -> Avaliacao:
+        values_to_update = {
+            "user_id": avaliacao.user_id,
+            "filme_id": avaliacao.filme_id,
+            "comentario": avaliacao.comentario,
+            "quant": avaliacao.avaliacao,
+            "data": avaliacao.data,
+        }
+
         await self.__session.execute(
             update(AvaliacaoModel)
             .where(AvaliacaoModel.id == avaliacao.id)
-            .values(model)
+            .values(values_to_update)
         )
         await self.__session.commit()
-        await self.__session.refresh(model)
 
-        return model.to_entity()
+        result = await self.__session.execute(
+            select(AvaliacaoModel)
+            .options(selectinload(AvaliacaoModel.user), selectinload(AvaliacaoModel.filme))
+            .where(AvaliacaoModel.id == avaliacao.id)
+        )
+        updated_model = result.scalar_one_or_none()
+
+        if updated_model is None:
+            raise Exception("Avaliação não encontrada após atualização")
+
+        return updated_model.to_entity()
+
+
 
     async def removerAvaliacao(self, avaliacao_id: str):
         await self.__session.execute(

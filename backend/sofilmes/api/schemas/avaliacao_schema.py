@@ -24,6 +24,8 @@ class AvaliacaoOutput(BaseModel):
     id: str = Field(..., description="ID do post")
     comentario: str
     avaliacao: float
+    user_id: str
+    filme_id: str
     user: UserOutput = Field(..., description="Dados do usuário que está postando")
     filme: FilmeOutput = Field(..., description="Dados do filme que está sendo postado")
 

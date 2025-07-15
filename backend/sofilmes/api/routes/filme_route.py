@@ -26,6 +26,7 @@ router = APIRouter()
 # TODO: Adicionar types de retorno da rotas
 
 
+
 @router.get("/", response_model=List[FilmeOutput])
 async def get_all_filmes(
     filme_repo: FilmesRepository = Depends(get_filmes_repository),
