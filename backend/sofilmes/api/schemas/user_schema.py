@@ -39,7 +39,7 @@ class UserOutput(BaseModel):
             nome=user.nome,
             username=user.username,
             email=str(user.email),
-            media=user.media
+            media=user.media,
             # role=user.role,
         )
 
@@ -61,5 +61,5 @@ def user_to_output(user: Usuario) -> UserOutput:
         nome=user.nome,
         username=user.username,
         email=str(user.email),
-        media=user.media
+        media=user.media or 0,
     )

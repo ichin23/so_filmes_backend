@@ -33,7 +33,6 @@ router = APIRouter()
     response_model=RegisterUserResponse,
     summary="Registrar novo usuário",
     description="Cria um novo usuário com nome, email e senha forte.",
-    
 )
 async def register_usuario(
     data: RegisterUserInput, db: AsyncSession = Depends(get_db_session)
@@ -45,7 +44,7 @@ async def register_usuario(
             nome=data.nome,
             username=data.username,
             email=Email(str(data.email)),
-            senha=Password(data.password)
+            senha=Password(data.password),
         )
 
         usecase = RegisterUsuarioUseCase(user_repo)
@@ -58,6 +57,7 @@ async def register_usuario(
                 nome=result.nome,
                 email=str(result.email),
                 username=result.username,
+                media=0,
             ),
         )
     except PasswordValidationError as p:
@@ -111,7 +111,7 @@ async def get_me_user(
             "nome": user.nome,
             "username": user.username,
             "email": str(user.email),
-            "media": user.media
+            "media": user.media,
         }
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))

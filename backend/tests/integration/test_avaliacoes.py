@@ -2,6 +2,7 @@ import pytest
 import datetime
 from httpx import AsyncClient
 
+
 @pytest.mark.asyncio
 async def test_crud_avaliacao(client: AsyncClient):
 
@@ -17,8 +18,7 @@ async def test_crud_avaliacao(client: AsyncClient):
     assert user_response.status_code == 200
     user_id = user_response.json()["user"]["id"]
 
-
-    #login
+    # login
     login_response = await client.post(
         "/usuarios/login",
         json={"email": "test@example.com", "password": "test@A123"},
@@ -27,7 +27,7 @@ async def test_crud_avaliacao(client: AsyncClient):
 
     headers = {"Authorization": f"Bearer {token}"}
 
-    #criação de filme para avaliar
+    # criação de filme para avaliar
     filme_response = await client.post(
         "/filme/",
         json={
@@ -38,19 +38,19 @@ async def test_crud_avaliacao(client: AsyncClient):
             "avaliacao": 4.7,
             "ano": 2023,
             "generos": ["Aventura", "Drama"],
-            "diretor": "João das Neves"
+            "diretor": "João das Neves",
         },
         headers=headers,
     )
     assert filme_response.status_code == 200
     filme_id = filme_response.json()["id"]
 
-    #criação de avaliação   
+    # criação de avaliação
     avaliacao_response = await client.post(
         "/avaliacao/",
         json={
-            "user_id":user_id,
-            "filme_id":filme_id,
+            "user_id": user_id,
+            "filme_id": filme_id,
             "data": datetime.datetime.now().isoformat(),
             "avaliacao": 5,
             "comentario": "Muito bom",
@@ -68,7 +68,7 @@ async def test_crud_avaliacao(client: AsyncClient):
 
     # Buscar avaliação por usuario
     list_avaliacao = await client.get(
-        f"/avaliacao/byuser/",
+        f"/avaliacao/byuser",
         headers=headers,
     )
     assert list_avaliacao.status_code == 200
@@ -85,7 +85,8 @@ async def test_crud_avaliacao(client: AsyncClient):
     assert any(c["comentario"] == "Muito bom" for c in list_avaliacao_data)
 
     # Buscar avaliação por id
-    list_avaliacao = await client.get(f"/avaliacao/byid/{avaliacao_data['id']}",
+    list_avaliacao = await client.get(
+        f"/avaliacao/byid/{avaliacao_data['id']}",
         headers=headers,
     )
     assert list_avaliacao.status_code == 200
@@ -105,8 +106,8 @@ async def test_crud_avaliacao(client: AsyncClient):
     avaliacao = await client.put(
         f"/avaliacao/{ avaliacao_data['id']}",
         json={
-            "user_id":user_id,
-            "filme_id":filme_id,
+            "user_id": user_id,
+            "filme_id": filme_id,
             "data": datetime.datetime.now().isoformat(),
             "avaliacao": 4,
             "comentario": "Muito bom, mas poderia ser melhor",
@@ -125,6 +126,3 @@ async def test_crud_avaliacao(client: AsyncClient):
     assert avaliacao.status_code == 200
     avaliacao_data = avaliacao.json()
     assert avaliacao_data["message"] == "Avaliação deletada com sucesso"
-
-
-

@@ -15,12 +15,12 @@ app = FastAPI(
     contact={"name": "Marcos Daré e Pedro Manoel", "email": "sofilmes@exemplo.com"},
     license_info={"name": "MIT", "url": "https://opensource.org/licenses/MIT"},
     openapi_tags=openapi_tags,
-    redirect_slashes=True
+    redirect_slashes=True,
 )
 
 origins = [
     "http://localhost:5173",  # Vite local
-    #"https://localhost:5173",  # Vite local
+    # "https://localhost:5173",  # Vite local
     "https://so-filmes.vercel.app/",  # Produção
 ]
 
@@ -32,22 +32,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     errors = []
     for err in exc.errors():
         field = ".".join(str(loc) for loc in err["loc"] if isinstance(loc, str))
-        errors.append({
-            "field": field,
-            "message": err["msg"]
-        })
+        errors.append({"field": field, "message": err["msg"]})
 
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-        content={
-            "detail": "Erro de validação nos campos enviados.",
-            "errors": errors
-        },
+        content={"detail": "Erro de validação nos campos enviados.", "errors": errors},
     )
 
 

@@ -1,7 +1,7 @@
 from sofilmes.domain.repositories.filmes_repositories import FilmesRepository
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from datetime import datetime, timedelta
 from sofilmes.infra.models.filme_model import FilmeModel
 from sofilmes.domain.entities.filme import Filme
@@ -60,6 +60,19 @@ class SQLAlchemyFilmeRepository(FilmesRepository):
         result = await self.__session.execute(smpt)
 
         return result.unique().scalar_one_or_none()
+
+    async def search_filme(self, filmeQuery):
+        print(f"Query: {filmeQuery}")
+        smpt = select(FilmeModel).filter(
+            or_(
+                FilmeModel.titulo.ilike(f"%{filmeQuery}%"),
+                FilmeModel.generos.any(filmeQuery),
+            )
+        )
+        result = await self.__session.execute(smpt)
+        filmes = [filme.to_entity() for filme in result.unique().scalars().all()]
+        print(filmes)
+        return filmes
 
     async def create(self, filme: Filme):
         model = FilmeModel.from_entity(filme)

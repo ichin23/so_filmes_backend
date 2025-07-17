@@ -19,12 +19,12 @@ from sofilmes.domain.entities.filme import Filme
 import uuid
 from sofilmes.usecases.filme.get_filmes_mais_avaliados import GetFilmesMaisAvaliados
 from sofilmes.usecases.filme.get_ultimos_filmes import GetUltimosFilmesUseCase
+from sofilmes.usecases.filme.search_filme import SearchFilmeUseCase
 
 security = HTTPBearer()
 router = APIRouter()
 
 # TODO: Adicionar types de retorno da rotas
-
 
 
 @router.get("/", response_model=List[FilmeOutput])
@@ -65,6 +65,17 @@ async def get_filme_by_id(
     if not filme:
         raise HTTPException(status_code=404, detail="Filme not found")
     return filme_to_output(filme)
+
+
+@router.get("/query/{q}", response_model=List[FilmeOutput])
+async def searchFilme(
+    q: str, filme_repo: FilmesRepository = Depends(get_filmes_repository)
+):
+    print(q)
+    usecase = SearchFilmeUseCase(filme_repo)
+    filmes = await usecase.execute(q)
+    print(filmes)
+    return filmes_to_output(filmes)
 
 
 @router.post("/", response_model=FilmeOutput)

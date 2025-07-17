@@ -23,7 +23,6 @@ class FilmeModel(Base):
         "AvaliacaoModel",
         back_populates="filme",
         lazy="joined",
-        cascade="all, delete-orphan",
         passive_deletes=True,
     )
 

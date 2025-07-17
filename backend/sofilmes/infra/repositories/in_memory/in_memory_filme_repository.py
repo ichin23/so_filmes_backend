@@ -24,6 +24,13 @@ class InMemoryFilmeRepository(FilmesRepository):
     async def get_mais_avaliados(self):
         return self._filmes
 
+    async def search_filme(self, filmeQuery):
+        return [
+            lambda x: x
+            for x in list(self._filmes.values())
+            if filmeQuery in x.titulo or filmeQuery in x.generos
+        ]
+
     @pytest.mark.asyncio
     async def create(self, filme):
         self._filmes[filme.id] = filme

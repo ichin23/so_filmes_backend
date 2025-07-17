@@ -2,6 +2,7 @@ import pytest
 import datetime
 from httpx import AsyncClient
 
+
 @pytest.mark.asyncio
 async def test_crud_filme(client: AsyncClient):
     user_response = await client.post(
@@ -16,8 +17,7 @@ async def test_crud_filme(client: AsyncClient):
     assert user_response.status_code == 200
     user_id = user_response.json()["user"]["id"]
 
-
-    #login
+    # login
     login_response = await client.post(
         "/usuarios/login",
         json={"email": "test@example.com", "password": "test@A123"},
@@ -26,7 +26,7 @@ async def test_crud_filme(client: AsyncClient):
 
     headers = {"Authorization": f"Bearer {token}"}
 
-    #criação de filme para avaliar
+    # criação de filme para avaliar
     filme_response = await client.post(
         "/filme/",
         json={
@@ -37,7 +37,7 @@ async def test_crud_filme(client: AsyncClient):
             "avaliacao": 4.7,
             "ano": 2023,
             "generos": ["Aventura", "Drama"],
-            "diretor": "João das Neves"
+            "diretor": "João das Neves",
         },
         headers=headers,
     )
@@ -47,8 +47,8 @@ async def test_crud_filme(client: AsyncClient):
     avaliacao_response = await client.post(
         "/avaliacao/",
         json={
-            "user_id":user_id,
-            "filme_id":filme_id,
+            "user_id": user_id,
+            "filme_id": filme_id,
             "data": datetime.datetime.now().isoformat(),
             "avaliacao": 5,
             "comentario": "Muito bom",
@@ -66,7 +66,7 @@ async def test_crud_filme(client: AsyncClient):
     print(list_filme_data)
     assert any(f["titulo"] == "O Grande Filme" for f in list_filme_data)
 
-    #buscar ultimos filmes
+    # buscar ultimos filmes
     list_filme = await client.get(
         "filme/ultimos",
         headers=headers,
@@ -75,7 +75,7 @@ async def test_crud_filme(client: AsyncClient):
     list_filme_data = list_filme.json()
     assert any(c["titulo"] == "O Grande Filme" for c in list_filme_data)
 
-    #buscar mais avaliados
+    # buscar mais avaliados
     list_filme = await client.get(
         "filme/maisAvaliados",
         headers=headers,
@@ -85,13 +85,10 @@ async def test_crud_filme(client: AsyncClient):
     assert any(c["titulo"] == "O Grande Filme" for c in list_filme_data)
 
     # bucar filme pelo id
-    filme = await client.get(f"filme/{filme_id}",
+    filme = await client.get(
+        f"filme/{filme_id}",
         headers=headers,
     )
     assert filme.status_code == 200
     filme_data = filme.json()
     assert filme_data["titulo"] == "O Grande Filme"
-
-
-
-    

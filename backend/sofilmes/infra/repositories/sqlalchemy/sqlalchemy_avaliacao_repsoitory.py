@@ -29,8 +29,7 @@ class SQLAlchemyAvaliacaoRepository(AvaliacoesRepository):
         stmt = (
             select(AvaliacaoModel)
             .options(
-                selectinload(AvaliacaoModel.user), 
-                selectinload(AvaliacaoModel.filme)  
+                selectinload(AvaliacaoModel.user), selectinload(AvaliacaoModel.filme)
             )
             .where(AvaliacaoModel.id == avaliacao_id)
         )
@@ -41,7 +40,6 @@ class SQLAlchemyAvaliacaoRepository(AvaliacoesRepository):
         if model is None:
             return None
         return model.to_entity()
-
 
     async def getUltimasAvaliacoes(self):
         smpt = (
@@ -129,8 +127,6 @@ class SQLAlchemyAvaliacaoRepository(AvaliacoesRepository):
 
         return model.to_entity()
 
-    from sqlalchemy.orm import selectinload
-
     async def editarAvaliacao(self, avaliacao: Avaliacao) -> Avaliacao:
         values_to_update = {
             "user_id": avaliacao.user_id,
@@ -186,13 +182,17 @@ class SQLAlchemyAvaliacaoRepository(AvaliacoesRepository):
         result = await self.__session.execute(
             select(AvaliacaoModel)
             .where(AvaliacaoModel.id == avaliacao.id)
-            .options(joinedload(AvaliacaoModel.user), joinedload(AvaliacaoModel.filme))  # Evita o lazy loading
+            .options(
+                joinedload(AvaliacaoModel.user), joinedload(AvaliacaoModel.filme)
+            )  # Evita o lazy loading
         )
         model = result.unique().scalar_one_or_none()
 
         result = await self.__session.execute(
             select(AvaliacaoModel)
-            .options(selectinload(AvaliacaoModel.user), selectinload(AvaliacaoModel.filme))
+            .options(
+                selectinload(AvaliacaoModel.user), selectinload(AvaliacaoModel.filme)
+            )
             .where(AvaliacaoModel.id == avaliacao.id)
         )
         updated_model = result.scalar_one_or_none()
@@ -201,8 +201,6 @@ class SQLAlchemyAvaliacaoRepository(AvaliacoesRepository):
             raise Exception("Avaliação não encontrada após atualização")
 
         return updated_model.to_entity()
-
-
 
     async def removerAvaliacao(self, avaliacao_id: str):
         await self.__session.execute(

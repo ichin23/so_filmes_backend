@@ -1,5 +1,6 @@
 import pytest
 
+
 @pytest.mark.asyncio
 async def test_register_and_login(client):
     # Registro
@@ -18,8 +19,7 @@ async def test_register_and_login(client):
 
     # Login
     response = await client.post(
-        "/usuarios/login",
-        json={"email": "test@example.com", "password": "test@A123"}
+        "/usuarios/login", json={"email": "test@example.com", "password": "test@A123"}
     )
     assert response.status_code == 200
     data = response.json()
@@ -28,8 +28,7 @@ async def test_register_and_login(client):
 
     # GET /usuarios/me
     response = await client.get(
-        "/usuarios/me",
-        headers={"Authorization": f"Bearer {token}"}
+        "/usuarios/me", headers={"Authorization": f"Bearer {token}"}
     )
     assert response.status_code == 200
     data = response.json()

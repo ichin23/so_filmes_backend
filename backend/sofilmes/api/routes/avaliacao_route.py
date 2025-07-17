@@ -91,7 +91,7 @@ async def get_ultimas_avaliacoes(
 ):
     usecase = GetUltimasAvaliacoesUseCase(avaliacao_repo)
     avaliacoes = await usecase.execute()
-    print(avaliacoes[0].user)
+
     return avaliacoes_to_output(avaliacoes)
 
 

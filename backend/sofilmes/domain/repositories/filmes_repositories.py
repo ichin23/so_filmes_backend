@@ -21,5 +21,9 @@ class FilmesRepository(ABC):
         pass
 
     @abstractmethod
+    async def search_filme(self, filmeQuery: str) -> list[Filme]:
+        pass
+
+    @abstractmethod
     async def create(self, filme: Filme) -> Filme:
         pass

@@ -4,7 +4,13 @@ from sofilmes.domain.value_objects.senha_vo import Password
 
 class Usuario:
     def __init__(
-        self, id: str, nome: str, username: str, email: Email, senha: Password, media:float=0
+        self,
+        id: str,
+        nome: str,
+        username: str,
+        email: Email,
+        senha: Password,
+        media: float = 0,
     ):
         self.id = id
         self.nome = nome

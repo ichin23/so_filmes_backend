@@ -14,7 +14,7 @@ def test_create_usuario() -> Usuario:
         email=Email("test@example.com"),
         senha=Password("secur3Pas@*"),
         username="usuario",
-        media=4.5
+        media=4.5,
     )
     assert usuario.nome == "Test Usuario"
 
