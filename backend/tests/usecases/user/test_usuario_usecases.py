@@ -20,6 +20,7 @@ def create_test_usuario() -> Usuario:
         email=Email("test@example.com"),
         senha=Password("secur3Pass@"),
         username="usuario",
+        media=4.5
     )
 
 

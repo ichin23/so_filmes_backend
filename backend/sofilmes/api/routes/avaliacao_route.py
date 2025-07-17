@@ -37,7 +37,7 @@ router = APIRouter()
 # TODO: Adicionar types de retorno da rotas
 
 
-@router.get("/byuser/", response_model=List[AvaliacaoOutput])
+@router.get("/byuser", response_model=List[AvaliacaoOutput])
 async def get_avaliacoes_by_user(
     avaliacao_repo: AvaliacoesRepository = Depends(get_avaliacao_repository),
     credentials: HTTPAuthorizationCredentials = Depends(security),
@@ -149,7 +149,7 @@ async def update_avaliacao(
 ):
 
     usecaseGet = GetAvaliacaoUseCase(avaliacao_repo)
-    existing_avaliacao = usecaseGet.execute(avaliacao_id)
+    existing_avaliacao = await usecaseGet.execute(avaliacao_id)
 
     if not existing_avaliacao:
         raise HTTPException(status_code=404, detail="Post not found")

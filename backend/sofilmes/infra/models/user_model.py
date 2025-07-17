@@ -18,6 +18,7 @@ class UserModel(Base):
     username: Mapped[str] = mapped_column(sa.String, unique=True, nullable=False)
     email: Mapped[str] = mapped_column(sa.String, unique=True, nullable=False)
     senha: Mapped[str] = mapped_column(sa.String, nullable=False)
+    media: Mapped[float] = mapped_column(sa.Float, nullable=False, default=0)
 
     avaliacoes = sa.orm.relationship(
         "AvaliacaoModel", lazy="selectin", back_populates="user", cascade="all, delete"
@@ -31,6 +32,7 @@ class UserModel(Base):
             username=entity.username,
             email=str(entity.email),
             senha=str(entity.senha),
+            media=entity.media
         )
 
     def to_entity(self) -> Usuario:
@@ -41,4 +43,5 @@ class UserModel(Base):
             username=self.username,
             email=Email(self.email),
             senha=Password(self.senha),
+            media=self.media
         )

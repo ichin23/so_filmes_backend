@@ -6,6 +6,7 @@ from sofilmes.infra.models.avaliacao_model import AvaliacaoModel
 from sqlalchemy.orm import joinedload
 from sofilmes.domain.entities.avaliacao import Avaliacao
 from sofilmes.infra.models.filme_model import FilmeModel
+from sofilmes.infra.models.user_model import UserModel
 
 
 class SQLAlchemyAvaliacaoRepository(AvaliacoesRepository):
@@ -24,11 +25,11 @@ class SQLAlchemyAvaliacaoRepository(AvaliacoesRepository):
         return [avaliacao.to_entity() for avaliacao in result.unique().scalars().all()]
 
     async def getAvaliacao(self, avaliacao_id: str):
-        smpt = select(AvaliacaoModel).where(AvaliacaoModel.id == avaliacao_id)
+        smpt = select(AvaliacaoModel).where(AvaliacaoModel.id == avaliacao_id).options(joinedload(AvaliacaoModel.user), joinedload(AvaliacaoModel.filme))
 
         result = await self.__session.execute(smpt)
 
-        model = result.scalar_one_or_none()
+        model = result.unique().scalar_one_or_none()
         return model.to_entity()
 
     async def getUltimasAvaliacoes(self):
@@ -59,8 +60,7 @@ class SQLAlchemyAvaliacaoRepository(AvaliacoesRepository):
         smpt = (
             select(AvaliacaoModel)
             .where(
-                AvaliacaoModel.filme_id == filme_id
-                and AvaliacaoModel.user_id == user_id
+                AvaliacaoModel.filme_id == filme_id, AvaliacaoModel.user_id == user_id
             )
             .options(joinedload(AvaliacaoModel.user), joinedload(AvaliacaoModel.filme))
         )
@@ -91,6 +91,20 @@ class SQLAlchemyAvaliacaoRepository(AvaliacoesRepository):
             .where(FilmeModel.id == avaliacao.filme_id)
             .values(avaliacao=nova_media)
         )
+
+        result = await self.__session.execute(
+            select(func.avg(AvaliacaoModel.quant)).where(
+                AvaliacaoModel.user_id == avaliacao.user_id
+            )
+        )
+        nova_media = result.scalar()
+
+        # Atualiza o campo 'avaliacao' no filme
+        await self.__session.execute(
+            update(UserModel)
+            .where(UserModel.id == avaliacao.user_id)
+            .values(media=nova_media)
+        )
         await self.__session.commit()
 
         result = await self.__session.execute(
@@ -109,10 +123,52 @@ class SQLAlchemyAvaliacaoRepository(AvaliacoesRepository):
         await self.__session.execute(
             update(AvaliacaoModel)
             .where(AvaliacaoModel.id == avaliacao.id)
-            .values(model)
+            .values(
+                user_id=avaliacao.user_id,
+                filme_id=avaliacao.filme_id,
+                comentario=avaliacao.comentario,
+                quant=avaliacao.avaliacao,
+                data=avaliacao.data,
+            )
         )
         await self.__session.commit()
-        await self.__session.refresh(model)
+
+        # Calcula a nova média via SELECT
+        result = await self.__session.execute(
+            select(func.avg(AvaliacaoModel.quant)).where(
+                AvaliacaoModel.filme_id == avaliacao.filme_id
+            )
+        )
+        nova_media = result.scalar()
+
+        # Atualiza o campo 'avaliacao' no filme
+        await self.__session.execute(
+            update(FilmeModel)
+            .where(FilmeModel.id == avaliacao.filme_id)
+            .values(avaliacao=nova_media)
+        )
+
+        result = await self.__session.execute(
+            select(func.avg(AvaliacaoModel.quant)).where(
+                AvaliacaoModel.user_id == avaliacao.user_id
+            )
+        )
+        nova_media = result.scalar()
+
+        # Atualiza o campo 'avaliacao' no filme
+        await self.__session.execute(
+            update(UserModel)
+            .where(UserModel.id == avaliacao.user_id)
+            .values(media=nova_media)
+        )
+        await self.__session.commit()
+
+        result = await self.__session.execute(
+            select(AvaliacaoModel)
+            .where(AvaliacaoModel.id == avaliacao.id)
+            .options(joinedload(AvaliacaoModel.user), joinedload(AvaliacaoModel.filme))  # Evita o lazy loading
+        )
+        model = result.unique().scalar_one_or_none()
 
         return model.to_entity()
 

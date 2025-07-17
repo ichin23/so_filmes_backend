@@ -29,6 +29,7 @@ class UserOutput(BaseModel):
         ..., min_length=3, max_length=20, description="Regsitro de usuário"
     )
     email: str = Field(..., description="Email do usuário")
+    media: float = Field(..., description="Média de avaliações do usuário")
     # role: str = Field(..., description="Papel do usuário (admin, user)")
 
     @classmethod
@@ -38,6 +39,7 @@ class UserOutput(BaseModel):
             nome=user.nome,
             username=user.username,
             email=str(user.email),
+            media=user.media
             # role=user.role,
         )
 
@@ -59,4 +61,5 @@ def user_to_output(user: Usuario) -> UserOutput:
         nome=user.nome,
         username=user.username,
         email=str(user.email),
+        media=user.media
     )

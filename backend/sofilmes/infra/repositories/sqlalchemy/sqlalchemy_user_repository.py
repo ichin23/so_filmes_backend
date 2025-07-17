@@ -1,5 +1,5 @@
 from sqlalchemy.orm import joinedload
-import sqlalchemy.orm
+from sqlalchemy.exc import IntegrityError
 from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -19,20 +19,24 @@ class SQLAlchemyUserRepository(UsuarioRepository):
         self._current_user: Optional[Usuario] = None
 
     async def register(self, user: Usuario) -> Usuario:
-        model = UserModel.from_entity(user)
-        self._session.add(model)
-        await self._session.commit()
-        await self._session.refresh(model)
-        user.id = model.id
-        return model.to_entity()
+        try:
+            model = UserModel.from_entity(user)
+            self._session.add(model)
+            await self._session.commit()
+            await self._session.refresh(model)
+            user.id = model.id
+            return model.to_entity()
+        except IntegrityError as e:
+            raise ValueError("Email já existente em outra conta")
 
     async def login(self, email: Email, password: Password) -> Optional[Usuario]:
         stmt = select(UserModel).where(UserModel.email == str(email))
         result = await self._session.execute(stmt)
         user = result.scalar_one_or_none()
-
+        print(user.media)
         if user and password.verify(user.senha):
             self._current_user = user.to_entity()
+            print(self._current_user.media)
             return self._current_user
         return None
 
